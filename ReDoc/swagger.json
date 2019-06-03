@@ -1,0 +1,1833 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "version" : "v3-oas3",
+    "title" : "Payment Center",
+    "description" : "This is a sample server Payment Center\n\n# signature\n  Все виды сообщений содержат в HTTP заголовоке параметр signature, в котором находится проверочное значение запроса, вычисленное с помощью алгоритма HMAC. При реализации проверки сообщения, обратите внимание на следующие моменты: \n  уведомления отправляются POST запросом \n  \n  cообщением является тело запроса body, например:\n  \n      \"serviceId=1&tranId=88800&amount=50.00&currency=RUB\" \n  \n  в качестве ключа используется значение параметра secret_key, например:\n  \n     \"secret_key_1\" \n  \n  хэш вычисляется функцией SHA256 (получаем данные в шестнадцатеричной (!) кодировке в нижнем регистре):\n  \n      \"78e79b0052da99b32146527cc7c5ab13222a4e8a3ded3bd77254f271087cb2a3\" \n  \n  вычисленное значение переводим в кодировку base64:\n  \n      \"NzhlNzliMDA1MmRhOTliMzIxNDY1MjdjYzdjNWFiMTMyMjJhNGU4YTNkZWQzYmQ3NzI1NGYyNzEwODdjYjJhMw==\" \n  \n  Сайты для online проверки генерации подписи:\n  \n      https://www.liavaag.org/English/SHA-Generator/HMAC/\n      \n      https://www.base64encode.org\n  \n  Пример формирования signature (Python):\n  \n      import hashlib\n      import hmac\n      import base64\n      \n      def calc_signature(body, secret_key)\n          message = body\n          secret = bytes(secret_key).encode('utf-8')\n          digest = hmac.new(secret, message, digestmod=hashlib.sha256).hexdigest()\n          return base64.b64encode(digest)\n      \n      \n  Пример формирования signature (PHP):\n  \n  \n      $requestType = \"charge\"; // possible values: charge, refund, pay...\n      $requestUrl = \"https://secured.payment.center/v2/\" . $requestType;\n  \n      // array for parametres\n      $bodyRequestArray = array(\n          'serviceId' => \"YOUR_SERVICE_ID\",\n          'cardNumber' => \"CREDIT_CARD_NUMBER\", // Without spaces, for example, '4111008030004444'\n          'expMonth' => \"EXPIRED_MONTH\", // 2 digits, for example, '04'\n          'expYear' => \"EXPIRED_YEAR\", // 2 digits, for example, '20'\n          'cardHolder' => \"CARD_HOLDER_NAME\",                        \n          'cvc' => \"CVC\",\n          'orderId'   => \"YOUR_ORDER_ID\" \n          'amount'    => \"AMOUNT\", // digits and dot ('.'), for example, '3500.45'\n          'currency'  => strtoupper(\"CURRENCY\"), // RUB|USD\n          'description' => \"DESCRIPTION\",\n      );\n  \n      $body = http_build_query($bodyRequestArray);\n      $signature = getSignature($body, \"YOUR_SECRET_KEY\");\n  \n      $ch = curl_init();\n      curl_setopt($ch, CURLOPT_URL, $requestUrl);\n      curl_setopt($ch, CURLOPT_POST, 1);\n      curl_setopt($ch, CURLOPT_POSTFIELDS, $body);  //Post Fields\n      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);\n  \n      $headers = array(\n          'signature:'.$signature\n      );\n  \n      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);\n  \n      $server_output = curl_exec ($ch);\n  \n      curl_close ($ch);\n  \n      function getSignature($body, $secretKey)\n      {\n          // create signature\n          $hash = hash_hmac('sha256', $body, $secretKey, false);\n          return base64_encode($hash);\n      }\n"
+  },
+  "paths" : {
+    "/orders/{OrderId}" : {
+      "get" : {
+        "description" : "Получение статуса платежей по OrderId.",
+        "operationId" : "/orders/{OrderId}:",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "OrderId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OrderIdResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Order not found"
+          }
+        }
+      }
+    },
+    "/transactions/{transactionId}" : {
+      "get" : {
+        "description" : "Получение статуса платежа по TransactionId.",
+        "operationId" : "/transactions/{transactionId}:",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "transactionId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TransactionIdResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Transaction not found"
+          }
+        }
+      }
+    },
+    "/payments" : {
+      "post" : {
+        "description" : "/payments",
+        "operationId" : "/payments",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NewPayformRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/NewPayformSuccessResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/requests/single" : {
+      "post" : {
+        "description" : "Одностадийная операция оплаты – денежные средства с карты списываются сразу после ее проведения. Дополнительно есть возможность задать rebillFlag для предварительной авторизации рекуррентного платежа.",
+        "operationId" : "Pay",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "security" : [ {
+          "signature" : [ "write:pets", "read:pets" ]
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NewPaymentRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/payments/requests/block" : {
+      "post" : {
+        "description" : "Двухстадийная операция оплаты – денежные средства предварительно блокируются на карте. После успешного проведения операции денежные средства блокируются на срок до 7 дней, если в течении 7 дней операцию не подтвердить запросом Charge, то блокировка средств будет автоматически отменена. Дополнительно есть возможность задать rebillFlag для предварительной авторизации рекуррентного платежа",
+        "operationId" : "Block",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NewPaymentRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/NewPaymentResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/3DSPaymentResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/RedirectPaymentResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/FalsePaymentResponse"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/payments/requests/rebill" : {
+      "post" : {
+        "description" : "Операция автоматического списания средств по ранее «привязанной карте».",
+        "operationId" : "Rebill",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RebillRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/RebillResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/FalseRebillResponse"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/payments/confirmation" : {
+      "post" : {
+        "description" : "Используется для операций Pay или Block с 3DS после получения результатов аутентификации от банка-эмитента для завершения блокировки или платежа.",
+        "operationId" : "Сonfirm",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ConfirmationRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/payments/refund" : {
+      "post" : {
+        "description" : "Операция возврата средств по ранее проведенной операции Pay.",
+        "operationId" : "Refund",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RefundRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/RefundResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/FalseRefundResponse"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/payments/cancellation" : {
+      "post" : {
+        "description" : "Операция отмены списания по ранее проведенной операции блокировки средств на карте Block.",
+        "operationId" : "Cancel",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PaymentCancelRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/CancelResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/FalseCancelResponse"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/payments/charge" : {
+      "post" : {
+        "description" : "Операция списания средств по ранее проведенной операции блокировки средств на карте Block.",
+        "operationId" : "Charge",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PaymentChargeRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/ChargeResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/FalseChargeResponse"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/payments/unsubscribe" : {
+      "post" : {
+        "description" : "Операция отписки от рекуррентного платежа.",
+        "operationId" : "Unsubscribe",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UnsubscribeRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/UnsubscribeResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/FalseUnsubscribeResponse"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/payouts" : {
+      "post" : {
+        "description" : "Операция выплаты денежных средств на карту получателя – денежные средства зачисляются на карту получателя в течении двух банковских дней.",
+        "operationId" : "Payout",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NewPayoutRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/NewPayoutResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/FalsePayoutResponse"
+                  } ]
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Request is not valid"
+          }
+        }
+      }
+    },
+    "/webhooks" : {
+      "post" : {
+        "description" : "Выполняется после того, как оплата была успешно проведена — получена авторизация эмитента. Служит для информирования о проведенном платеже: система отправляет запрос на адрес ТСП с информацией об оплате, а сервис ТСП должен зафиксировать факт платежа.",
+        "operationId" : "Webhooks",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Webhook"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created"
+          }
+        }
+      }
+    },
+    "/balance" : {
+      "post" : {
+        "description" : "Операция проверки доступного баланса для Payout.",
+        "operationId" : "Balance",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/signature"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "parameters" : {
+      "X-SITE-ID" : {
+        "in" : "header",
+        "name" : "X-SITE-ID",
+        "required" : true,
+        "description" : "ID Мерчанта",
+        "schema" : {
+          "type" : "string"
+        }
+      },
+      "signature" : {
+        "in" : "header",
+        "name" : "signature",
+        "required" : true,
+        "description" : "Подпись заголовка. [Описание](#section/signature)",
+        "schema" : {
+          "type" : "string"
+        }
+      }
+    },
+    "schemas" : {
+      "OrderId" : {
+        "type" : "string",
+        "maxLength" : 100,
+        "minLength" : 1,
+        "description" : "Уникальный идентификатор транзакции в системе Партнера."
+      },
+      "Country" : {
+        "type" : "string",
+        "maxLength" : 3,
+        "minLength" : 3,
+        "description" : "Код страны, указанной при оформлении карты в банке, в формате ISO."
+      },
+      "Amount" : {
+        "type" : "integer",
+        "maxLength" : 12,
+        "minLength" : 1,
+        "description" : "Сумма к оплате. От 1 до 12 цифр, может содержать десятичный разделитель в виде точки ‘.’."
+      },
+      "description" : {
+        "type" : "string",
+        "maxLength" : 250,
+        "minLength" : 1,
+        "description" : "Описание транзакции."
+      },
+      "Currency" : {
+        "type" : "string",
+        "maxLength" : 3,
+        "minLength" : 3,
+        "description" : "Валюта в формате ISO (USD, EUR, RUR). Буквы (a-zA-Z)."
+      },
+      "RebillFlag" : {
+        "type" : "integer",
+        "minimum" : 0,
+        "maximum" : 1,
+        "description" : "Признак рекуррентного платежа. Возможные значения: 0 или 1."
+      },
+      "CustomFields" : {
+        "type" : "string",
+        "maxLength" : 8096,
+        "minLength" : 1,
+        "description" : "Дополнительные поля транзакции. Url encoded строка, содержащая пары ключей и их значений команды, разделённых символом «;» (точка с запятой). Ключи и значения разделены символом ‘=’ (равно). Пример значения до преобразования URL encode: IP=207.46.197.32;Address=Moscow Central str. flat 1 после преобразования URL encode: IP=207.46.197.32;Address=Moscow%20Central%20str.%20flat%201;"
+      },
+      "ExtraData" : {
+        "type" : "string",
+        "maxLength" : 8096,
+        "minLength" : 1,
+        "description" : "Дополнительные поля транзакции."
+      },
+      "SiteId" : {
+        "type" : "integer",
+        "maxLength" : 12,
+        "minLength" : 1,
+        "description" : "Идентификатор сервиса Партнера. От 1 до 12 цифр без пробелов и разделителей."
+      },
+      "rebillId" : {
+        "type" : "integer",
+        "maxLength" : 20,
+        "minLength" : 1,
+        "description" : "Идентификатор рекуррентного платежа."
+      },
+      "PaymentType" : {
+        "type" : "integer",
+        "minimum" : 0,
+        "maximum" : 1,
+        "description" : "Признак учёта типа платежа родительской транзакции. Возможные значения (по умолчанию 0): 1 - использовать тип платежа (BLOCK/PAY) родительской транзакции, 0 - не использовать (всегда PAY)."
+      },
+      "TransactionId" : {
+        "type" : "integer",
+        "maxLength" : 20,
+        "minLength" : 1,
+        "description" : "Идентификатор транзакции в системе."
+      },
+      "MD" : {
+        "type" : "integer",
+        "description" : "MD"
+      },
+      "QiwiNumber" : {
+        "type" : "integer",
+        "maxLength" : 19,
+        "minLength" : 12,
+        "description" : "Номер QIWI"
+      },
+      "CardNumber" : {
+        "type" : "integer",
+        "maxLength" : 19,
+        "minLength" : 12,
+        "description" : "Номер карты. От 12 до 19 цифр без пробелов."
+      },
+      "ExpMonth" : {
+        "type" : "integer",
+        "maxLength" : 2,
+        "minLength" : 2,
+        "description" : "Месяц истечения срока действия карты. 2 цифры с лидирующим нулем."
+      },
+      "ExpYear" : {
+        "type" : "integer",
+        "maxLength" : 2,
+        "minLength" : 2,
+        "description" : "Год истечения срока действия карты. Последние 2 цифры года."
+      },
+      "CardHolder" : {
+        "type" : "string",
+        "maxLength" : 40,
+        "minLength" : 1,
+        "description" : "Владелец карты (с лицевой стороны карты). Допустимые символы [a-Z.,-]."
+      },
+      "CVC" : {
+        "type" : "integer",
+        "maxLength" : 3,
+        "minLength" : 3,
+        "description" : "CVC2/CVV2. 3 цифры."
+      },
+      "Email" : {
+        "type" : "string",
+        "format" : "email",
+        "description" : "Email покупателя, обязательно для рекуррентных платежей. Этот Email не должен передаваться в банк, это Email для информирования Покупателя - сохраняется в транзакции."
+      },
+      "Phone" : {
+        "type" : "integer",
+        "maxLength" : 20,
+        "minLength" : 10,
+        "description" : "Впереди ‘+’. В МН формате +79991231212 (без пробелов)."
+      },
+      "Language" : {
+        "type" : "string",
+        "maxLength" : 5,
+        "minLength" : 2,
+        "description" : "Название языка (например, en, ru...)."
+      },
+      "Address" : {
+        "type" : "string",
+        "maxLength" : 200,
+        "minLength" : 1,
+        "description" : "Адрес держателя, указанный при оформлении карты в банке. Может присутствовать, если поддерживается верификация адреса держателя."
+      },
+      "Town" : {
+        "type" : "string",
+        "maxLength" : 200,
+        "minLength" : 1,
+        "description" : "Город держателя, указанный при оформлении карты в банке. Может присутствовать, если поддерживается верификация адреса держателя."
+      },
+      "zip" : {
+        "type" : "string",
+        "maxLength" : 20,
+        "minLength" : 1,
+        "description" : "Почтовый индекс держателя, указанный при оформлении карты в банке. Может присутствовать, если поддерживается верификация адреса держателя."
+      },
+      "IpAddress" : {
+        "type" : "string",
+        "format" : "ipv4",
+        "description" : "IP Address"
+      },
+      "ProcessingAmount" : {
+        "type" : "integer",
+        "maxLength" : 12,
+        "minLength" : 1,
+        "description" : "Сумма платежа в валюте в которой операция была проведена в банке. Соответствует полученному от Core.Queue."
+      },
+      "ProcessingCurrency" : {
+        "type" : "string",
+        "maxLength" : 3,
+        "minLength" : 3,
+        "description" : "Код валюты в которой операция была проведена в банке. Соответствует полученному от Core.Queue."
+      },
+      "acsUrl" : {
+        "type" : "string",
+        "description" : "URL для редиректа."
+      },
+      "PaRes" : {
+        "type" : "string",
+        "description" : "Зашифрованный ответ."
+      },
+      "PaReq" : {
+        "type" : "string",
+        "description" : "Зашифрованный запрос."
+      },
+      "threeDSKey" : {
+        "type" : "string",
+        "description" : "Специальный атрибут."
+      },
+      "redirectUrl" : {
+        "type" : "string",
+        "description" : "URL для редиректа."
+      },
+      "redirectParams" : {
+        "type" : "string",
+        "description" : "Строка параметров, с которыми нужно сделать редирект. Формат строки 'название_параметра_1=значение_параметра_1&название_параметра_2=значение_параметра_2&...'."
+      },
+      "redirectTransId" : {
+        "type" : "string",
+        "description" : "Идентификатор транзакции с системе банка."
+      },
+      "redirectMethod" : {
+        "type" : "string",
+        "description" : "HTTP метод, используемый для редиректа."
+      },
+      "success" : {
+        "type" : "string",
+        "enum" : [ true, false ],
+        "description" : "Флаг успешности операции."
+      },
+      "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
+        "type" : "string",
+        "description" : "Флаг операции.",
+        "enum" : [ true, false, "3DS", "REDIRECT" ]
+      },
+      "TransactionStatus_pay" : {
+        "type" : "string",
+        "enum" : [ "new", "trusted", "filtered", "preAuthorized3DS", "preAuthorizedAF", "authorized", "voided", "charged", "refunded", "rejected", "error" ],
+        "description" : "Текущее состояние транзакции."
+      },
+      "TransactionStatus_payout" : {
+        "type" : "string",
+        "enum" : [ "new", "trusted", "filtered", "charged", "rejected", "error" ],
+        "description" : "Текущее состояние транзакции."
+      },
+      "newAmount" : {
+        "type" : "integer",
+        "maxLength" : 12,
+        "minLength" : 1,
+        "description" : "Остаток суммы."
+      },
+      "ErrorCode" : {
+        "type" : "string",
+        "description" : "Код ошибки."
+      },
+      "ErrorDescription" : {
+        "type" : "string",
+        "description" : "Описание ошибки."
+      },
+      "ErrorMessage" : {
+        "type" : "string",
+        "description" : "Причина отказа."
+      },
+      "Event" : {
+        "type" : "string",
+        "description" : "Payment."
+      },
+      "DateTime" : {
+        "type" : "string",
+        "format" : "date-time",
+        "description" : "Payment."
+      },
+      "CardMasked" : {
+        "type" : "string",
+        "maxLength" : 19,
+        "minLength" : 12,
+        "description" : "Маскированный номер карты."
+      },
+      "IsTest" : {
+        "description" : "1 - тестовый; 0 - боевой.",
+        "type" : "integer",
+        "enum" : [ 1, 0 ]
+      },
+      "Status" : {
+        "type" : "string",
+        "enum" : [ "CHARGED", "BLOCKED" ],
+        "description" : "Статус платежа после авторизации: CHARGED — для одностадийных платежей, BLOCKED — для двухстайдиных."
+      },
+      "Token" : {
+        "type" : "string",
+        "description" : "Токен для проведения рекарринговых платежей."
+      },
+      "ExpirationDate" : {
+        "type" : "string",
+        "description" : "Дата устаревания банковской карты в формате MM/YY."
+      },
+      "RRN" : {
+        "type" : "string",
+        "description" : "Регистрационный номер транзакции в банке."
+      },
+      "Balance" : {
+        "type" : "integer",
+        "maxLength" : 12,
+        "minLength" : 1,
+        "description" : "Доступный размер Payout на момент запроса."
+      },
+      "GenericResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "type" : "boolean"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "code" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "Order" : {
+        "type" : "object"
+      },
+      "Transaction" : {
+        "type" : "object"
+      },
+      "NewPaymentRequest" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "PaymentMethod",
+          "mapping" : {
+            "Card" : "#/components/schemas/CardDetails",
+            "QIWI" : "#/components/schemas/QiWi"
+          }
+        },
+        "properties" : {
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "description" : {
+            "$ref" : "#/components/schemas/description"
+          },
+          "RebillFlag" : {
+            "$ref" : "#/components/schemas/RebillFlag"
+          },
+          "CustomerInfo" : {
+            "$ref" : "#/components/schemas/CustomerInfo"
+          },
+          "ExtraData" : {
+            "$ref" : "#/components/schemas/CustomFields"
+          },
+          "PaymentMethod" : {
+            "description" : "Payment Method",
+            "type" : "string"
+          }
+        }
+      },
+      "RebillRequest" : {
+        "type" : "object",
+        "properties" : {
+          "SiteId" : {
+            "$ref" : "#/components/schemas/SiteId"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "description" : {
+            "$ref" : "#/components/schemas/description"
+          },
+          "RebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
+          },
+          "PaymentType" : {
+            "$ref" : "#/components/schemas/PaymentType"
+          }
+        }
+      },
+      "ConfirmationRequest" : {
+        "type" : "object",
+        "properties" : {
+          "SiteId" : {
+            "$ref" : "#/components/schemas/SiteId"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "PaRes" : {
+            "$ref" : "#/components/schemas/PaRes"
+          },
+          "MD" : {
+            "$ref" : "#/components/schemas/MD"
+          }
+        }
+      },
+      "RefundRequest" : {
+        "type" : "object",
+        "properties" : {
+          "SiteId" : {
+            "$ref" : "#/components/schemas/SiteId"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          }
+        }
+      },
+      "PaymentCancelRequest" : {
+        "type" : "object",
+        "properties" : {
+          "SiteId" : {
+            "$ref" : "#/components/schemas/SiteId"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          }
+        }
+      },
+      "PaymentChargeRequest" : {
+        "type" : "object",
+        "properties" : {
+          "SiteId" : {
+            "$ref" : "#/components/schemas/SiteId"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          }
+        }
+      },
+      "UnsubscribeRequest" : {
+        "type" : "object",
+        "properties" : {
+          "SiteId" : {
+            "$ref" : "#/components/schemas/SiteId"
+          },
+          "RebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
+          }
+        }
+      },
+      "NewPayoutRequest" : {
+        "type" : "object",
+        "properties" : {
+          "SiteId" : {
+            "$ref" : "#/components/schemas/SiteId"
+          },
+          "CardNumber" : {
+            "$ref" : "#/components/schemas/CardNumber"
+          },
+          "CardholderName" : {
+            "$ref" : "#/components/schemas/CardHolder"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "description" : {
+            "$ref" : "#/components/schemas/description"
+          },
+          "CustomerInfo" : {
+            "$ref" : "#/components/schemas/CustomerInfo"
+          },
+          "ExtraData" : {
+            "$ref" : "#/components/schemas/ExtraData"
+          }
+        }
+      },
+      "NewPayformRequest" : {
+        "type" : "object",
+        "properties" : {
+          "successUrl" : {
+            "type" : "string"
+          },
+          "errorUrl" : {
+            "type" : "string"
+          },
+          "notifyUrl" : {
+            "type" : "string"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          }
+        }
+      },
+      "NewPayformSuccessResponse" : {
+        "type" : "object",
+        "properties" : {
+          "formUrl" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PaymentResponse" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "TODO_CHANGE_FIELD_SUCCESS_LOGIC",
+          "mapping" : {
+            "true" : "#/components/schemas/NewPaymentResponse",
+            "false" : "#/components/schemas/FalsePaymentResponse",
+            "3DS" : "#/components/schemas/3DSPaymentResponse",
+            "Redirect" : "#/components/schemas/RedirectPaymentResponse"
+          }
+        },
+        "properties" : {
+          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
+            "description" : "Payment Method",
+            "type" : "string"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          }
+        }
+      },
+      "NewPaymentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
+            "$ref" : "#/components/schemas/TODO_CHANGE_FIELD_SUCCESS_LOGIC"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "ProcessingAmount" : {
+            "$ref" : "#/components/schemas/ProcessingAmount"
+          },
+          "ProcessingCurrency" : {
+            "$ref" : "#/components/schemas/ProcessingCurrency"
+          },
+          "TransactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus_pay"
+          },
+          "RebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
+          }
+        }
+      },
+      "3DSPaymentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
+            "$ref" : "#/components/schemas/TODO_CHANGE_FIELD_SUCCESS_LOGIC"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "RebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
+          },
+          "acsUrl" : {
+            "$ref" : "#/components/schemas/acsUrl"
+          },
+          "PaRes" : {
+            "$ref" : "#/components/schemas/PaRes"
+          },
+          "threeDSKey" : {
+            "$ref" : "#/components/schemas/threeDSKey"
+          },
+          "redirectUrl" : {
+            "$ref" : "#/components/schemas/redirectUrl"
+          },
+          "redirectParams" : {
+            "$ref" : "#/components/schemas/redirectParams"
+          },
+          "redirectMethod" : {
+            "$ref" : "#/components/schemas/redirectMethod"
+          }
+        }
+      },
+      "RedirectPaymentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
+            "$ref" : "#/components/schemas/TODO_CHANGE_FIELD_SUCCESS_LOGIC"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "RebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
+          },
+          "redirectUrl" : {
+            "$ref" : "#/components/schemas/redirectUrl"
+          },
+          "redirectParams" : {
+            "$ref" : "#/components/schemas/redirectParams"
+          },
+          "redirectTransId" : {
+            "$ref" : "#/components/schemas/redirectTransId"
+          },
+          "redirectMethod" : {
+            "$ref" : "#/components/schemas/redirectMethod"
+          }
+        }
+      },
+      "FalsePaymentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
+            "$ref" : "#/components/schemas/TODO_CHANGE_FIELD_SUCCESS_LOGIC"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "ErrorResponse" : {
+            "$ref" : "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "RebillResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "ProcessingAmount" : {
+            "$ref" : "#/components/schemas/ProcessingAmount"
+          },
+          "ProcessingCurrency" : {
+            "$ref" : "#/components/schemas/ProcessingCurrency"
+          },
+          "TransactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus_pay"
+          },
+          "newAmount" : {
+            "$ref" : "#/components/schemas/newAmount"
+          },
+          "RebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
+          }
+        }
+      },
+      "FalseRebillResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "ErrorResponse" : {
+            "$ref" : "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "RefundResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "ProcessingAmount" : {
+            "$ref" : "#/components/schemas/ProcessingAmount"
+          },
+          "ProcessingCurrency" : {
+            "$ref" : "#/components/schemas/ProcessingCurrency"
+          },
+          "TransactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus_pay"
+          },
+          "newAmount" : {
+            "$ref" : "#/components/schemas/newAmount"
+          },
+          "RebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          }
+        }
+      },
+      "FalseRefundResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "ErrorResponse" : {
+            "$ref" : "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "CancelResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "ProcessingAmount" : {
+            "$ref" : "#/components/schemas/ProcessingAmount"
+          },
+          "ProcessingCurrency" : {
+            "$ref" : "#/components/schemas/ProcessingCurrency"
+          },
+          "TransactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus_pay"
+          }
+        }
+      },
+      "FalseCancelResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "ErrorResponse" : {
+            "$ref" : "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "ChargeResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "ProcessingAmount" : {
+            "$ref" : "#/components/schemas/ProcessingAmount"
+          },
+          "ProcessingCurrency" : {
+            "$ref" : "#/components/schemas/ProcessingCurrency"
+          },
+          "TransactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus_pay"
+          },
+          "newAmount" : {
+            "$ref" : "#/components/schemas/newAmount"
+          },
+          "RebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
+          }
+        }
+      },
+      "FalseChargeResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "ErrorResponse" : {
+            "$ref" : "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "UnsubscribeResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          }
+        }
+      },
+      "FalseUnsubscribeResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "ErrorResponse" : {
+            "$ref" : "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "NewPayoutResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "TransactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus_payout"
+          }
+        }
+      },
+      "FalsePayoutResponse" : {
+        "type" : "object",
+        "properties" : {
+          "success" : {
+            "$ref" : "#/components/schemas/success"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "ErrorResponse" : {
+            "$ref" : "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "BalanceResponse" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "Success",
+          "mapping" : {
+            "true" : "#/components/schemas/NewBalanceResponse",
+            "false" : "#/components/schemas/ErrorBalanceResponse"
+          }
+        },
+        "properties" : {
+          "Success" : {
+            "description" : "Success",
+            "type" : "string"
+          },
+          "description" : {
+            "$ref" : "#/components/schemas/description"
+          }
+        }
+      },
+      "PayoutConfirmationResponse" : {
+        "type" : "object"
+      },
+      "PaymentMethod" : {
+        "type" : "object"
+      },
+      "CardDetails" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewPaymentRequest"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "CardNumber" : {
+              "$ref" : "#/components/schemas/CardNumber"
+            },
+            "ExpMonth" : {
+              "$ref" : "#/components/schemas/ExpMonth"
+            },
+            "ExpYear" : {
+              "$ref" : "#/components/schemas/ExpYear"
+            },
+            "CardholderName" : {
+              "$ref" : "#/components/schemas/CardHolder"
+            },
+            "CVC" : {
+              "$ref" : "#/components/schemas/CVC"
+            }
+          }
+        } ]
+      },
+      "QiWi" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewPaymentRequest"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "QiwiNumber" : {
+              "$ref" : "#/components/schemas/QiwiNumber"
+            }
+          }
+        } ]
+      },
+      "NewResponse" : {
+        "type" : "object",
+        "properties" : {
+          "TransactionId" : {
+            "type" : "integer"
+          },
+          "Amount" : {
+            "type" : "integer"
+          },
+          "Currency" : {
+            "type" : "string"
+          },
+          "ProcessingAmount" : {
+            "type" : "integer"
+          },
+          "ProcessingCurrency" : {
+            "type" : "string"
+          },
+          "TransactionStatus" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "ErrorCode" : {
+            "$ref" : "#/components/schemas/ErrorCode"
+          },
+          "ErrorDescription" : {
+            "$ref" : "#/components/schemas/ErrorDescription"
+          }
+        }
+      },
+      "CustomerInfo" : {
+        "type" : "object",
+        "properties" : {
+          "Email" : {
+            "$ref" : "#/components/schemas/Email"
+          },
+          "Phone" : {
+            "$ref" : "#/components/schemas/Phone"
+          },
+          "Language" : {
+            "$ref" : "#/components/schemas/Language"
+          },
+          "Address" : {
+            "$ref" : "#/components/schemas/Address"
+          },
+          "Town" : {
+            "$ref" : "#/components/schemas/Town"
+          },
+          "zip" : {
+            "$ref" : "#/components/schemas/zip"
+          },
+          "Country" : {
+            "$ref" : "#/components/schemas/Country"
+          },
+          "IpAddress" : {
+            "$ref" : "#/components/schemas/IpAddress"
+          }
+        }
+      },
+      "Webhook" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "Event",
+          "mapping" : {
+            "Payment" : "#/components/schemas/PaymentsWebhook",
+            "Fail" : "#/components/schemas/FailWebhook",
+            "Refund" : "#/components/schemas/RefundWebhook",
+            "Void" : "#/components/schemas/VoidWebhook",
+            "Receipt" : "#/components/schemas/ReceiptWebhook",
+            "3DS" : "#/components/schemas/3DSWebhook"
+          }
+        },
+        "properties" : {
+          "Event" : {
+            "description" : "Event",
+            "type" : "string"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "SiteId" : {
+            "$ref" : "#/components/schemas/SiteId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "DateTime" : {
+            "$ref" : "#/components/schemas/DateTime"
+          },
+          "IsTest" : {
+            "$ref" : "#/components/schemas/IsTest"
+          },
+          "Email" : {
+            "$ref" : "#/components/schemas/Email"
+          },
+          "Phone" : {
+            "$ref" : "#/components/schemas/Phone"
+          },
+          "description" : {
+            "$ref" : "#/components/schemas/description"
+          },
+          "CustomFields" : {
+            "$ref" : "#/components/schemas/CustomFields"
+          }
+        }
+      },
+      "PaymentsWebhook" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Webhook"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "CardMasked" : {
+              "$ref" : "#/components/schemas/CardMasked"
+            },
+            "CardHolder" : {
+              "$ref" : "#/components/schemas/CardHolder"
+            },
+            "Status" : {
+              "$ref" : "#/components/schemas/Status"
+            },
+            "rebillId" : {
+              "$ref" : "#/components/schemas/rebillId"
+            },
+            "description" : {
+              "$ref" : "#/components/schemas/description"
+            },
+            "Token" : {
+              "$ref" : "#/components/schemas/Token"
+            },
+            "ExpirationDate" : {
+              "$ref" : "#/components/schemas/ExpirationDate"
+            },
+            "RRN" : {
+              "$ref" : "#/components/schemas/RRN"
+            }
+          }
+        } ]
+      },
+      "FailWebhook" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Webhook"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "CardMasked" : {
+              "$ref" : "#/components/schemas/CardMasked"
+            },
+            "CardHolder" : {
+              "$ref" : "#/components/schemas/CardHolder"
+            },
+            "Status" : {
+              "$ref" : "#/components/schemas/Status"
+            },
+            "description" : {
+              "$ref" : "#/components/schemas/description"
+            },
+            "ExpirationDate" : {
+              "$ref" : "#/components/schemas/ExpirationDate"
+            },
+            "RRN" : {
+              "$ref" : "#/components/schemas/RRN"
+            }
+          }
+        } ]
+      },
+      "RefundWebhook" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Webhook"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "CardMasked" : {
+              "$ref" : "#/components/schemas/CardMasked"
+            },
+            "CardHolder" : {
+              "$ref" : "#/components/schemas/CardHolder"
+            },
+            "newAmount" : {
+              "$ref" : "#/components/schemas/newAmount"
+            },
+            "ExpirationDate" : {
+              "$ref" : "#/components/schemas/ExpirationDate"
+            },
+            "RRN" : {
+              "$ref" : "#/components/schemas/RRN"
+            }
+          }
+        } ]
+      },
+      "VoidWebhook" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Webhook"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "CardMasked" : {
+              "$ref" : "#/components/schemas/CardMasked"
+            },
+            "CardHolder" : {
+              "$ref" : "#/components/schemas/CardHolder"
+            },
+            "ExpirationDate" : {
+              "$ref" : "#/components/schemas/ExpirationDate"
+            },
+            "RRN" : {
+              "$ref" : "#/components/schemas/RRN"
+            }
+          }
+        } ]
+      },
+      "ReceiptWebhook" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Webhook"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "newAmount" : {
+              "$ref" : "#/components/schemas/newAmount"
+            },
+            "Status" : {
+              "$ref" : "#/components/schemas/Status"
+            },
+            "description" : {
+              "$ref" : "#/components/schemas/description"
+            }
+          }
+        } ]
+      },
+      "3DSWebhook" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Webhook"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "PaRes" : {
+              "$ref" : "#/components/schemas/PaRes"
+            },
+            "PaReq" : {
+              "$ref" : "#/components/schemas/PaReq"
+            },
+            "MD" : {
+              "$ref" : "#/components/schemas/MD"
+            }
+          }
+        } ]
+      },
+      "NewBalanceResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/BalanceResponse"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "Balance" : {
+              "$ref" : "#/components/schemas/Balance"
+            },
+            "Currency" : {
+              "$ref" : "#/components/schemas/Currency"
+            }
+          }
+        } ]
+      },
+      "ErrorBalanceResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/BalanceResponse"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
+      },
+      "TransactionIdResponse" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "Success",
+          "mapping" : {
+            "true" : "#/components/schemas/NewTransactionIdResponse",
+            "false" : "#/components/schemas/ErrorTransactionIdResponse"
+          }
+        },
+        "properties" : {
+          "Success" : {
+            "description" : "Success",
+            "type" : "string"
+          }
+        }
+      },
+      "NewTransactionIdResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/TransactionIdResponse"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "TransactionId" : {
+              "$ref" : "#/components/schemas/TransactionId"
+            },
+            "OrderId" : {
+              "$ref" : "#/components/schemas/OrderId"
+            },
+            "Amount" : {
+              "$ref" : "#/components/schemas/Amount"
+            },
+            "Currency" : {
+              "$ref" : "#/components/schemas/Currency"
+            },
+            "ProcessingAmount" : {
+              "$ref" : "#/components/schemas/ProcessingAmount"
+            },
+            "ProcessingCurrency" : {
+              "$ref" : "#/components/schemas/ProcessingCurrency"
+            },
+            "TransactionStatus_pay" : {
+              "$ref" : "#/components/schemas/TransactionStatus_pay"
+            },
+            "redirectMethod" : {
+              "$ref" : "#/components/schemas/redirectMethod"
+            },
+            "redirectUrl" : {
+              "$ref" : "#/components/schemas/redirectUrl"
+            },
+            "redirectParams" : {
+              "$ref" : "#/components/schemas/redirectParams"
+            }
+          }
+        } ]
+      },
+      "ErrorTransactionIdResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/TransactionIdResponse"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
+      },
+      "OrderIdResponse" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/TransactionIdResponse"
+        }
+      }
+    }
+  },
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/Jackburger/payment-center/v3-oas3"
+  } ]
+}
