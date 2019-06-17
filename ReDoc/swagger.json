@@ -114,7 +114,7 @@
                   "allOf" : [ {
                     "$ref" : "#/components/schemas/NewPaymentResponse"
                   }, {
-                    "$ref" : "#/components/schemas/rebillId"
+                    "$ref" : "#/components/schemas/RebillId"
                   } ]
                 }
               }
@@ -174,7 +174,7 @@
                   "allOf" : [ {
                     "$ref" : "#/components/schemas/NewPaymentResponse"
                   }, {
-                    "$ref" : "#/components/schemas/rebillId"
+                    "$ref" : "#/components/schemas/RebillId"
                   } ]
                 }
               }
@@ -636,7 +636,7 @@
         "type" : "object",
         "description" : "Дополнительные параметры. JSON массив. Может содержать параметры (первые 3 обязательны):\n\n<b>success_url</b> - url для возврата с страницы success;\n<b>decline_url</b> - url для возврата с страницы error;\n<b>cancel_url</b> – url для возврата (кнопка 'Вернуться');\n<b>account_id</b> – для возврата напрямую в ЛК клиента;\n\nПример: \n{\"success_url\": \"http://server1.com/\", \"decline_url\": \"http://server2.com/\", \"cancel_url\": \"http://server3.com/\", “account_id”: “1122aass112”}\n\nВ случае режима с автоматическим редиректом покупателя: \n\n<b>success_url</b> - url для редиректа при успешной операции;\n<b>decline_url</b> - url для редиректа при неуспешной операции;\n"
       },
-      "rebillId" : {
+      "RebillId" : {
         "type" : "integer",
         "maxLength" : 20,
         "minLength" : 1,
@@ -957,7 +957,7 @@
             "$ref" : "#/components/schemas/Description"
           },
           "RebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
+            "$ref" : "#/components/schemas/RebillId"
           },
           "PaymentType" : {
             "$ref" : "#/components/schemas/PaymentType"
@@ -1032,7 +1032,7 @@
         "required" : [ "RebillId" ],
         "properties" : {
           "RebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
+            "$ref" : "#/components/schemas/RebillId"
           }
         }
       },
@@ -1233,7 +1233,7 @@
               "$ref" : "#/components/schemas/TransactionStatus"
             },
             "RebillId" : {
-              "$ref" : "#/components/schemas/rebillId"
+              "$ref" : "#/components/schemas/RebillId"
             }
           }
         } ]
@@ -1416,7 +1416,7 @@
               "$ref" : "#/components/schemas/newAmount"
             },
             "RebillId" : {
-              "$ref" : "#/components/schemas/rebillId"
+              "$ref" : "#/components/schemas/RebillId"
             }
           }
         } ]
@@ -1719,8 +1719,8 @@
             "Status" : {
               "$ref" : "#/components/schemas/Status"
             },
-            "rebillId" : {
-              "$ref" : "#/components/schemas/rebillId"
+            "RebillId" : {
+              "$ref" : "#/components/schemas/RebillId"
             },
             "Token" : {
               "$ref" : "#/components/schemas/Token"
