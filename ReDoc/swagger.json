@@ -722,7 +722,7 @@
         "minLength" : 1,
         "description" : "Город держателя, указанный при оформлении карты в банке. Может присутствовать, если поддерживается верификация адреса держателя."
       },
-      "Zip" : {
+      "ZIP" : {
         "type" : "string",
         "maxLength" : 20,
         "minLength" : 1,
@@ -1641,8 +1641,8 @@
           "Town" : {
             "$ref" : "#/components/schemas/Town"
           },
-          "Zip" : {
-            "$ref" : "#/components/schemas/Zip"
+          "ZIP" : {
+            "$ref" : "#/components/schemas/ZIP"
           },
           "Country" : {
             "$ref" : "#/components/schemas/Country"
