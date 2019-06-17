@@ -173,7 +173,24 @@
             }
           },
           "400" : {
-            "description" : "Request is not valid"
+            "description" : "Request is not valid",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FalsePaymentResponse"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DoublePaymentResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -206,13 +223,20 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/NewRebillResponse"
+                  "$ref" : "#/components/schemas/NewPaymentResponse"
                 }
               }
             }
           },
           "400" : {
-            "description" : "Request is not valid"
+            "description" : "Request is not valid",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FalsePaymentResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -277,13 +301,20 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/NewRefundResponse"
+                  "$ref" : "#/components/schemas/NewPaymentResponse"
                 }
               }
             }
           },
           "400" : {
-            "description" : "Request is not valid"
+            "description" : "Request is not valid",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FalsePaymentResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -316,13 +347,20 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/NewCancelResponse"
+                  "$ref" : "#/components/schemas/NewPaymentResponse"
                 }
               }
             }
           },
           "400" : {
-            "description" : "Request is not valid"
+            "description" : "Request is not valid",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FalsePaymentResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -355,13 +393,20 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/NewChargeResponse"
+                  "$ref" : "#/components/schemas/NewPaymentResponse"
                 }
               }
             }
           },
           "400" : {
-            "description" : "Request is not valid"
+            "description" : "Request is not valid",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FalsePaymentResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -433,13 +478,20 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/NewPayoutResponse"
+                  "$ref" : "#/components/schemas/NewPaymentResponse"
                 }
               }
             }
           },
           "400" : {
-            "description" : "Request is not valid"
+            "description" : "Request is not valid",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FalsePaymentResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1054,6 +1106,9 @@
           },
           "Currency" : {
             "$ref" : "#/components/schemas/Currency"
+          },
+          "rebillId" : {
+            "$ref" : "#/components/schemas/rebillId"
           }
         }
       },
