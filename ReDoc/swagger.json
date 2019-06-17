@@ -2001,8 +2001,5 @@
   "servers" : [ {
     "description" : "SwaggerHub API Auto Mocking",
     "url" : "https://virtserver.swaggerhub.com/Jackburger/payment-center/v3-oas3"
-  }, {
-    "description" : "SwaggerHub API Auto Mocking",
-    "url" : "https://virtserver.swaggerhub.com/solbeg-rpc/payment-center/v3"
   } ]
 }
