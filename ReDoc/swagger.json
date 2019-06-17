@@ -111,7 +111,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/NewPaymentResponse"
+                  "allOf" : [ {
+                    "$ref" : "#/components/schemas/NewPaymentResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/rebillId"
+                  } ]
                 }
               }
             }
@@ -167,7 +171,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/NewPaymentResponse"
+                  "allOf" : [ {
+                    "$ref" : "#/components/schemas/NewPaymentResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/rebillId"
+                  } ]
                 }
               }
             }
@@ -1106,9 +1114,6 @@
           },
           "Currency" : {
             "$ref" : "#/components/schemas/Currency"
-          },
-          "rebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
           }
         }
       },
