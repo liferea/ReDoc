@@ -2,12 +2,18 @@
   "openapi" : "3.0.0",
   "info" : {
     "version" : "v3-oas3",
-    "title" : "Payment Center (GIT.4)",
-    "description" : "This is a sample server Payment Center\n\n# signature\n  Все виды сообщений содержат в HTTP заголовоке параметр signature, в котором находится проверочное значение запроса, вычисленное с помощью алгоритма HMAC. При реализации проверки сообщения, обратите внимание на следующие моменты: \n  уведомления отправляются POST запросом \n  \n  cообщением является тело запроса body, например:\n  \n      \"serviceId=1&tranId=88800&amount=50.00&currency=RUB\" \n  \n  в качестве ключа используется значение параметра secret_key, например:\n  \n     \"secret_key_1\" \n  \n  хэш вычисляется функцией SHA256 (получаем данные в шестнадцатеричной (!) кодировке в нижнем регистре):\n  \n      \"78e79b0052da99b32146527cc7c5ab13222a4e8a3ded3bd77254f271087cb2a3\" \n  \n  вычисленное значение переводим в кодировку base64:\n  \n      \"NzhlNzliMDA1MmRhOTliMzIxNDY1MjdjYzdjNWFiMTMyMjJhNGU4YTNkZWQzYmQ3NzI1NGYyNzEwODdjYjJhMw==\" \n  \n  Сайты для online проверки генерации подписи:\n  \n      https://www.liavaag.org/English/SHA-Generator/HMAC/\n      \n      https://www.base64encode.org\n  \n  Пример формирования signature (Python):\n  \n      import hashlib\n      import hmac\n      import base64\n      \n      def calc_signature(body, secret_key)\n          message = body\n          secret = bytes(secret_key).encode('utf-8')\n          digest = hmac.new(secret, message, digestmod=hashlib.sha256).hexdigest()\n          return base64.b64encode(digest)\n      \n      \n  Пример формирования signature (PHP):\n  \n  \n      $requestType = \"charge\"; // possible values: charge, refund, pay...\n      $requestUrl = \"https://secured.payment.center/v2/\" . $requestType;\n  \n      // array for parametres\n      $bodyRequestArray = array(\n          'serviceId' => \"YOUR_SERVICE_ID\",\n          'cardNumber' => \"CREDIT_CARD_NUMBER\", // Without spaces, for example, '4111008030004444'\n          'expMonth' => \"EXPIRED_MONTH\", // 2 digits, for example, '04'\n          'expYear' => \"EXPIRED_YEAR\", // 2 digits, for example, '20'\n          'cardHolder' => \"CARD_HOLDER_NAME\",                        \n          'cvc' => \"CVC\",\n          'orderId'   => \"YOUR_ORDER_ID\" \n          'amount'    => \"AMOUNT\", // digits and dot ('.'), for example, '3500.45'\n          'currency'  => strtoupper(\"CURRENCY\"), // RUB|USD\n          'description' => \"DESCRIPTION\",\n      );\n  \n      $body = http_build_query($bodyRequestArray);\n      $signature = getSignature($body, \"YOUR_SECRET_KEY\");\n  \n      $ch = curl_init();\n      curl_setopt($ch, CURLOPT_URL, $requestUrl);\n      curl_setopt($ch, CURLOPT_POST, 1);\n      curl_setopt($ch, CURLOPT_POSTFIELDS, $body);  //Post Fields\n      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);\n  \n      $headers = array(\n          'signature:'.$signature\n      );\n  \n      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);\n  \n      $server_output = curl_exec ($ch);\n  \n      curl_close ($ch);\n  \n      function getSignature($body, $secretKey)\n      {\n          // create signature\n          $hash = hash_hmac('sha256', $body, $secretKey, false);\n          return base64_encode($hash);\n      }\n"
+    "x-logo" : {
+      "url" : "/static/logo.png",
+      "backgroundColor" : null,
+      "altText" : "Gate Express logo"
+    },
+    "title" : "Gate Express",
+    "description" : "This is sample documentation \"Gate Express\"\n\n\n# Цифровая подпись запроса\n  Все виды сообщений содержат в HTTP заголовоке параметр X-REQUEST-SIGNATURE, в котором находится проверочное значение запроса, вычисленное с помощью алгоритма HMAC. При реализации проверки сообщения, обратите внимание на следующие моменты: \n  уведомления отправляются POST запросом\n  \n  cообщением является тело запроса body, например:\n  \n      \"Amount=50.00&Currency=RUB\" \n  \n  в качестве ключа используется значение параметра secret, например:\n  \n     \"site_secret_value_1\" \n  \n  хэш вычисляется функцией SHA256 (получаем данные в шестнадцатеричной (!) кодировке в нижнем регистре):\n  \n      \"TODO78e79b0052da99b32146527cc7c5ab13222a4e8a3ded3bd77254f271087cb2a3\" \n  \n  вычисленное значение переводим в кодировку base64:\n  \n      \"TODONzhlNzliMDA1MmRhOTliMzIxNDY1MjdjYzdjNWFiMTMyMjJhNGU4YTNkZWQzYmQ3NzI1NGYyNzEwODdjYjJhMw==\" \n  \n  Сайты для online проверки генерации подписи:\n  \n      https://www.liavaag.org/English/SHA-Generator/HMAC/\n      \n      https://www.base64encode.org\n  \n  Пример формирования X-REQUEST-SIGNATURE (Python):\n  \n      import hashlib\n      import hmac\n      import base64\n      \n      def calc_signature(body, site_secret_value)\n          message = body\n          secret = bytes(site_secret_value).encode('utf-8')\n          digest = hmac.new(secret, message, digestmod=hashlib.sha256).hexdigest()\n          return base64.b64encode(digest)\n      \n      \n  Пример формирования signature (PHP):\n  \n  \n      $requestType = \"/payments/requests/single\";\n      $requestUrl = \"https://ep.gate.express/\" . $requestType;\n  \n      // array for parametres\n      $bodyRequestArray = array(\n          'CardNumber' => \"CREDIT_CARD_NUMBER\", // Without spaces, for example, '4111111111111111'\n          'ExpMonth' => \"EXPIRED_MONTH\", // 2 digits, for example, '05'\n          'ExpYear' => \"EXPIRED_YEAR\", // 2 digits, for example, '24'\n          'CardHolder' => \"CARD_HOLDER_NAME\",                        \n          'CVC' => \"CVC\",\n          'OrderId'   => \"YOUR_ORDER_ID\" \n          'Amount'    => \"AMOUNT\", // digits and dot ('.'), for example, '100.45'\n          'Currency'  => strtoupper(\"CURRENCY\"), // RUB|USD\n          'Description' => \"DESCRIPTION\",\n      );\n  \n      $body = http_build_query($bodyRequestArray);\n      $signature = getSignature($body, \"YOUR_SECRET_KEY\");\n  \n      $ch = curl_init();\n      curl_setopt($ch, CURLOPT_URL, $requestUrl);\n      curl_setopt($ch, CURLOPT_POST, 1);\n      curl_setopt($ch, CURLOPT_POSTFIELDS, $body);  //Post Fields\n      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);\n  \n      $headers = array(\n          'X-REQUEST-SIGNATURE:'.$signature\n      );\n  \n      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);\n  \n      $server_output = curl_exec ($ch);\n  \n      curl_close ($ch);\n  \n      function getSignature($body, $secretKey)\n      {\n          // create signature\n          $hash = hash_hmac('sha256', $body, $secretKey, false);\n          return base64_encode($hash);\n      }\n      \n  \n  \n"
   },
   "paths" : {
     "/orders/{OrderId}" : {
       "get" : {
+        "tags" : [ "gateway" ],
         "description" : "Получение статуса платежей по OrderId.",
         "operationId" : "/orders/{OrderId}:",
         "parameters" : [ {
@@ -20,7 +26,9 @@
         }, {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "responses" : {
           "200" : {
@@ -41,6 +49,7 @@
     },
     "/transactions/{transactionId}" : {
       "get" : {
+        "tags" : [ "gateway" ],
         "description" : "Получение статуса платежа по TransactionId.",
         "operationId" : "/transactions/{transactionId}:",
         "parameters" : [ {
@@ -53,7 +62,9 @@
         }, {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "responses" : {
           "200" : {
@@ -72,21 +83,24 @@
         }
       }
     },
-    "/payments" : {
+    "/payments/requests/single" : {
       "post" : {
-        "description" : "/payments",
-        "operationId" : "/payments",
+        "tags" : [ "gateway" ],
+        "description" : "Одностадийная операция оплаты – денежные средства с карты списываются сразу после ее проведения. Дополнительно есть возможность задать rebillFlag для предварительной авторизации рекуррентного платежа.",
+        "operationId" : "Pay",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/NewPayformRequest"
+                "$ref" : "#/components/schemas/NewPaymentRequest"
               }
             }
           }
@@ -97,7 +111,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/NewPayformSuccessResponse"
+                  "$ref" : "#/components/schemas/NewPaymentResponse"
                 }
               }
             }
@@ -107,61 +121,35 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/requests/single" : {
-      "post" : {
-        "description" : "Одностадийная операция оплаты – денежные средства с карты списываются сразу после ее проведения. Дополнительно есть возможность задать rebillFlag для предварительной авторизации рекуррентного платежа.",
-        "operationId" : "Pay",
-        "parameters" : [ {
-          "$ref" : "#/components/parameters/X-SITE-ID"
-        }, {
-          "$ref" : "#/components/parameters/signature"
-        } ],
-        "security" : [ {
-          "signature" : [ "write:pets", "read:pets" ]
-        } ],
-        "requestBody" : {
-          "required" : true,
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/NewPaymentRequest"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Created",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaymentResponse"
+                  "$ref" : "#/components/schemas/FalsePaymentResponse"
                 }
               }
             }
           },
-          "400" : {
-            "description" : "Request is not valid"
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DoublePaymentResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/payments/requests/block" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Двухстадийная операция оплаты – денежные средства предварительно блокируются на карте. После успешного проведения операции денежные средства блокируются на срок до 7 дней, если в течении 7 дней операцию не подтвердить запросом Charge, то блокировка средств будет автоматически отменена. Дополнительно есть возможность задать rebillFlag для предварительной авторизации рекуррентного платежа",
         "operationId" : "Block",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -179,15 +167,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "oneOf" : [ {
-                    "$ref" : "#/components/schemas/NewPaymentResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/3DSPaymentResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/RedirectPaymentResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/FalsePaymentResponse"
-                  } ]
+                  "$ref" : "#/components/schemas/NewPaymentResponse"
                 }
               }
             }
@@ -200,12 +180,15 @@
     },
     "/payments/requests/rebill" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Операция автоматического списания средств по ранее «привязанной карте».",
         "operationId" : "Rebill",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -223,11 +206,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "oneOf" : [ {
-                    "$ref" : "#/components/schemas/RebillResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/FalseRebillResponse"
-                  } ]
+                  "$ref" : "#/components/schemas/NewRebillResponse"
                 }
               }
             }
@@ -240,12 +219,15 @@
     },
     "/payments/confirmation" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Используется для операций Pay или Block с 3DS после получения результатов аутентификации от банка-эмитента для завершения блокировки или платежа.",
         "operationId" : "Сonfirm",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -269,12 +251,15 @@
     },
     "/payments/refund" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Операция возврата средств по ранее проведенной операции Pay.",
         "operationId" : "Refund",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -292,11 +277,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "oneOf" : [ {
-                    "$ref" : "#/components/schemas/RefundResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/FalseRefundResponse"
-                  } ]
+                  "$ref" : "#/components/schemas/NewRefundResponse"
                 }
               }
             }
@@ -309,12 +290,15 @@
     },
     "/payments/cancellation" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Операция отмены списания по ранее проведенной операции блокировки средств на карте Block.",
         "operationId" : "Cancel",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -332,11 +316,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "oneOf" : [ {
-                    "$ref" : "#/components/schemas/CancelResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/FalseCancelResponse"
-                  } ]
+                  "$ref" : "#/components/schemas/NewCancelResponse"
                 }
               }
             }
@@ -349,12 +329,15 @@
     },
     "/payments/charge" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Операция списания средств по ранее проведенной операции блокировки средств на карте Block.",
         "operationId" : "Charge",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -372,11 +355,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "oneOf" : [ {
-                    "$ref" : "#/components/schemas/ChargeResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/FalseChargeResponse"
-                  } ]
+                  "$ref" : "#/components/schemas/NewChargeResponse"
                 }
               }
             }
@@ -389,12 +368,15 @@
     },
     "/payments/unsubscribe" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Операция отписки от рекуррентного платежа.",
         "operationId" : "Unsubscribe",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -412,11 +394,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "oneOf" : [ {
-                    "$ref" : "#/components/schemas/UnsubscribeResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/FalseUnsubscribeResponse"
-                  } ]
+                  "$ref" : "#/components/schemas/NewUnsubscribeResponse"
                 }
               }
             }
@@ -429,12 +407,15 @@
     },
     "/payouts" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Операция выплаты денежных средств на карту получателя – денежные средства зачисляются на карту получателя в течении двух банковских дней.",
         "operationId" : "Payout",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -452,11 +433,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "oneOf" : [ {
-                    "$ref" : "#/components/schemas/NewPayoutResponse"
-                  }, {
-                    "$ref" : "#/components/schemas/FalsePayoutResponse"
-                  } ]
+                  "$ref" : "#/components/schemas/NewPayoutResponse"
                 }
               }
             }
@@ -467,14 +444,43 @@
         }
       }
     },
+    "/balance" : {
+      "post" : {
+        "tags" : [ "gateway" ],
+        "description" : "Операция проверки доступного баланса для Payout.",
+        "operationId" : "Balance",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-SITE-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/webhooks" : {
       "post" : {
+        "tags" : [ "gateway" ],
         "description" : "Выполняется после того, как оплата была успешно проведена — получена авторизация эмитента. Служит для информирования о проведенном платеже: система отправляет запрос на адрес ТСП с информацией об оплате, а сервис ТСП должен зафиксировать факт платежа.",
         "operationId" : "Webhooks",
         "parameters" : [ {
           "$ref" : "#/components/parameters/X-SITE-ID"
         }, {
-          "$ref" : "#/components/parameters/signature"
+          "$ref" : "#/components/parameters/X-REQUEST-ID"
+        }, {
+          "$ref" : "#/components/parameters/X-REQUEST-SIGNATURE"
         } ],
         "requestBody" : {
           "required" : true,
@@ -492,29 +498,6 @@
           }
         }
       }
-    },
-    "/balance" : {
-      "post" : {
-        "description" : "Операция проверки доступного баланса для Payout.",
-        "operationId" : "Balance",
-        "parameters" : [ {
-          "$ref" : "#/components/parameters/X-SITE-ID"
-        }, {
-          "$ref" : "#/components/parameters/signature"
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Created",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/BalanceResponse"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components" : {
@@ -528,11 +511,20 @@
           "type" : "string"
         }
       },
-      "signature" : {
+      "X-REQUEST-SIGNATURE" : {
         "in" : "header",
-        "name" : "signature",
+        "name" : "X-REQUEST-SIGNATURE",
         "required" : true,
-        "description" : "Подпись заголовка. [Описание](#section/signature)",
+        "description" : "Подпись запроса. [Описание](#section/Cifrovaya-podpis-zaprosa)",
+        "schema" : {
+          "type" : "string"
+        }
+      },
+      "X-REQUEST-ID" : {
+        "in" : "header",
+        "name" : "X-REQUEST-ID",
+        "required" : true,
+        "description" : "Уникальный ID запроса у Партнера(мерчанта).",
         "schema" : {
           "type" : "string"
         }
@@ -543,7 +535,7 @@
         "type" : "string",
         "maxLength" : 100,
         "minLength" : 1,
-        "description" : "Уникальный идентификатор транзакции в системе Партнера."
+        "description" : "Уникальный идентификатор заказа в системе Партнера(мерчанта)."
       },
       "Country" : {
         "type" : "string",
@@ -557,7 +549,7 @@
         "minLength" : 1,
         "description" : "Сумма к оплате. От 1 до 12 цифр, может содержать десятичный разделитель в виде точки ‘.’."
       },
-      "description" : {
+      "Description" : {
         "type" : "string",
         "maxLength" : 250,
         "minLength" : 1,
@@ -573,25 +565,16 @@
         "type" : "integer",
         "minimum" : 0,
         "maximum" : 1,
-        "description" : "Признак рекуррентного платежа. Возможные значения: 0 или 1."
-      },
-      "CustomFields" : {
-        "type" : "string",
-        "maxLength" : 8096,
-        "minLength" : 1,
-        "description" : "Дополнительные поля транзакции. Url encoded строка, содержащая пары ключей и их значений команды, разделённых символом «;» (точка с запятой). Ключи и значения разделены символом ‘=’ (равно). Пример значения до преобразования URL encode: IP=207.46.197.32;Address=Moscow Central str. flat 1 после преобразования URL encode: IP=207.46.197.32;Address=Moscow%20Central%20str.%20flat%201;"
+        "description" : "Признак рекуррентного платежа.",
+        "enum" : [ 0, 1 ]
       },
       "ExtraData" : {
-        "type" : "string",
-        "maxLength" : 8096,
-        "minLength" : 1,
+        "type" : "object",
         "description" : "Дополнительные поля транзакции."
       },
-      "SiteId" : {
-        "type" : "integer",
-        "maxLength" : 12,
-        "minLength" : 1,
-        "description" : "Идентификатор сервиса Партнера. От 1 до 12 цифр без пробелов и разделителей."
+      "Extra" : {
+        "type" : "object",
+        "description" : "Дополнительные параметры. JSON массив. Может содержать параметры (первые 3 обязательны):\n\n<b>success_url</b> - url для возврата с страницы success;\n<b>decline_url</b> - url для возврата с страницы error;\n<b>cancel_url</b> – url для возврата (кнопка 'Вернуться');\n<b>account_id</b> – для возврата напрямую в ЛК клиента;\n\nПример: \n{\"success_url\": \"http://server1.com/\", \"decline_url\": \"http://server2.com/\", \"cancel_url\": \"http://server3.com/\", “account_id”: “1122aass112”}\n\nВ случае режима с автоматическим редиректом покупателя: \n\n<b>success_url</b> - url для редиректа при успешной операции;\n<b>decline_url</b> - url для редиректа при неуспешной операции;\n"
       },
       "rebillId" : {
         "type" : "integer",
@@ -603,17 +586,14 @@
         "type" : "integer",
         "minimum" : 0,
         "maximum" : 1,
-        "description" : "Признак учёта типа платежа родительской транзакции. Возможные значения (по умолчанию 0): 1 - использовать тип платежа (BLOCK/PAY) родительской транзакции, 0 - не использовать (всегда PAY)."
+        "description" : "Признак учёта типа платежа родительской транзакции. Возможные значения (по умолчанию 0): 1 - использовать тип платежа (BLOCK/PAY) родительской транзакции, 0 - не использовать (всегда PAY).",
+        "enum" : [ 0, 1 ]
       },
       "TransactionId" : {
         "type" : "integer",
         "maxLength" : 20,
         "minLength" : 1,
         "description" : "Идентификатор транзакции в системе."
-      },
-      "MD" : {
-        "type" : "integer",
-        "description" : "MD"
       },
       "QiwiNumber" : {
         "type" : "integer",
@@ -631,6 +611,8 @@
         "type" : "integer",
         "maxLength" : 2,
         "minLength" : 2,
+        "minimum" : 1,
+        "maximum" : 12,
         "description" : "Месяц истечения срока действия карты. 2 цифры с лидирующим нулем."
       },
       "ExpYear" : {
@@ -695,13 +677,13 @@
         "type" : "integer",
         "maxLength" : 12,
         "minLength" : 1,
-        "description" : "Сумма платежа в валюте в которой операция была проведена в банке. Соответствует полученному от Core.Queue."
+        "description" : "Сумма платежа в валюте в которой операция была проведена в банке. Соответствует полученному от процессинга."
       },
       "ProcessingCurrency" : {
         "type" : "string",
         "maxLength" : 3,
         "minLength" : 3,
-        "description" : "Код валюты в которой операция была проведена в банке. Соответствует полученному от Core.Queue."
+        "description" : "Код валюты в которой операция была проведена в банке. Соответствует полученному от процессинга."
       },
       "acsUrl" : {
         "type" : "string",
@@ -715,9 +697,9 @@
         "type" : "string",
         "description" : "Зашифрованный запрос."
       },
-      "threeDSKey" : {
+      "MD" : {
         "type" : "string",
-        "description" : "Специальный атрибут."
+        "description" : "Специальный идентификатор."
       },
       "redirectUrl" : {
         "type" : "string",
@@ -735,9 +717,8 @@
         "type" : "string",
         "description" : "HTTP метод, используемый для редиректа."
       },
-      "success" : {
+      "TransactionState" : {
         "type" : "string",
-        "enum" : [ true, false ],
         "description" : "Флаг успешности операции."
       },
       "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
@@ -745,14 +726,9 @@
         "description" : "Флаг операции.",
         "enum" : [ true, false, "3DS", "REDIRECT" ]
       },
-      "TransactionStatus_pay" : {
+      "TransactionStatus" : {
         "type" : "string",
-        "enum" : [ "new", "trusted", "filtered", "preAuthorized3DS", "preAuthorizedAF", "authorized", "voided", "charged", "refunded", "rejected", "error" ],
-        "description" : "Текущее состояние транзакции."
-      },
-      "TransactionStatus_payout" : {
-        "type" : "string",
-        "enum" : [ "new", "trusted", "filtered", "charged", "rejected", "error" ],
+        "enum" : [ "new", "charged", "refunded", "failedrefund", "failed", "rejectedrefund", "rejected", "pending", "frozen", "cancel", "declined", "result_unknown", "filtered" ],
         "description" : "Текущее состояние транзакции."
       },
       "newAmount" : {
@@ -836,8 +812,39 @@
       "Transaction" : {
         "type" : "object"
       },
+      "NewWebPayRequest" : {
+        "type" : "object",
+        "required" : [ "OrderId", "Amount", "Currency", "Extra", "Description" ],
+        "properties" : {
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          },
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "description" : {
+            "$ref" : "#/components/schemas/Description"
+          },
+          "RebillFlag" : {
+            "$ref" : "#/components/schemas/RebillFlag"
+          },
+          "CustomerInfo" : {
+            "$ref" : "#/components/schemas/CustomerInfo"
+          },
+          "ExtraData" : {
+            "$ref" : "#/components/schemas/ExtraData"
+          },
+          "Extra" : {
+            "$ref" : "#/components/schemas/Extra"
+          }
+        }
+      },
       "NewPaymentRequest" : {
         "type" : "object",
+        "required" : [ "OrderId", "Amount", "Currency", "PaymentMethod", "Description" ],
         "discriminator" : {
           "propertyName" : "PaymentMethod",
           "mapping" : {
@@ -855,8 +862,8 @@
           "Currency" : {
             "$ref" : "#/components/schemas/Currency"
           },
-          "description" : {
-            "$ref" : "#/components/schemas/description"
+          "Description" : {
+            "$ref" : "#/components/schemas/Description"
           },
           "RebillFlag" : {
             "$ref" : "#/components/schemas/RebillFlag"
@@ -865,7 +872,7 @@
             "$ref" : "#/components/schemas/CustomerInfo"
           },
           "ExtraData" : {
-            "$ref" : "#/components/schemas/CustomFields"
+            "$ref" : "#/components/schemas/ExtraData"
           },
           "PaymentMethod" : {
             "description" : "Payment Method",
@@ -875,10 +882,8 @@
       },
       "RebillRequest" : {
         "type" : "object",
+        "required" : [ "OrderId", "Amount", "Currency", "RebillId" ],
         "properties" : {
-          "SiteId" : {
-            "$ref" : "#/components/schemas/SiteId"
-          },
           "OrderId" : {
             "$ref" : "#/components/schemas/OrderId"
           },
@@ -888,8 +893,8 @@
           "Currency" : {
             "$ref" : "#/components/schemas/Currency"
           },
-          "description" : {
-            "$ref" : "#/components/schemas/description"
+          "Description" : {
+            "$ref" : "#/components/schemas/Description"
           },
           "RebillId" : {
             "$ref" : "#/components/schemas/rebillId"
@@ -901,10 +906,8 @@
       },
       "ConfirmationRequest" : {
         "type" : "object",
+        "required" : [ "OrderId", "PaRes", "MD", "TransactionId" ],
         "properties" : {
-          "SiteId" : {
-            "$ref" : "#/components/schemas/SiteId"
-          },
           "TransactionId" : {
             "$ref" : "#/components/schemas/TransactionId"
           },
@@ -921,10 +924,8 @@
       },
       "RefundRequest" : {
         "type" : "object",
+        "required" : [ "Amount", "Currency", "TransactionId" ],
         "properties" : {
-          "SiteId" : {
-            "$ref" : "#/components/schemas/SiteId"
-          },
           "TransactionId" : {
             "$ref" : "#/components/schemas/TransactionId"
           },
@@ -938,10 +939,8 @@
       },
       "PaymentCancelRequest" : {
         "type" : "object",
+        "required" : [ "Amount", "Currency", "TransactionId" ],
         "properties" : {
-          "SiteId" : {
-            "$ref" : "#/components/schemas/SiteId"
-          },
           "TransactionId" : {
             "$ref" : "#/components/schemas/TransactionId"
           },
@@ -955,10 +954,8 @@
       },
       "PaymentChargeRequest" : {
         "type" : "object",
+        "required" : [ "Amount", "Currency", "TransactionId" ],
         "properties" : {
-          "SiteId" : {
-            "$ref" : "#/components/schemas/SiteId"
-          },
           "TransactionId" : {
             "$ref" : "#/components/schemas/TransactionId"
           },
@@ -972,10 +969,8 @@
       },
       "UnsubscribeRequest" : {
         "type" : "object",
+        "required" : [ "RebillId" ],
         "properties" : {
-          "SiteId" : {
-            "$ref" : "#/components/schemas/SiteId"
-          },
           "RebillId" : {
             "$ref" : "#/components/schemas/rebillId"
           }
@@ -983,10 +978,8 @@
       },
       "NewPayoutRequest" : {
         "type" : "object",
+        "required" : [ "CardNumber", "CardholderName", "OrderId", "Amount", "Currency", "Description" ],
         "properties" : {
-          "SiteId" : {
-            "$ref" : "#/components/schemas/SiteId"
-          },
           "CardNumber" : {
             "$ref" : "#/components/schemas/CardNumber"
           },
@@ -1002,8 +995,8 @@
           "Currency" : {
             "$ref" : "#/components/schemas/Currency"
           },
-          "description" : {
-            "$ref" : "#/components/schemas/description"
+          "Description" : {
+            "$ref" : "#/components/schemas/Description"
           },
           "CustomerInfo" : {
             "$ref" : "#/components/schemas/CustomerInfo"
@@ -1015,6 +1008,7 @@
       },
       "NewPayformRequest" : {
         "type" : "object",
+        "required" : [ "successUrl", "errorUrl", "notifyUrl", "Amount", "Currency" ],
         "properties" : {
           "successUrl" : {
             "type" : "string"
@@ -1035,6 +1029,7 @@
       },
       "NewPayformSuccessResponse" : {
         "type" : "object",
+        "required" : [ "formUrl", "token" ],
         "properties" : {
           "formUrl" : {
             "type" : "string"
@@ -1044,35 +1039,12 @@
           }
         }
       },
-      "PaymentResponse" : {
-        "type" : "object",
-        "discriminator" : {
-          "propertyName" : "TODO_CHANGE_FIELD_SUCCESS_LOGIC",
-          "mapping" : {
-            "true" : "#/components/schemas/NewPaymentResponse",
-            "false" : "#/components/schemas/FalsePaymentResponse",
-            "3DS" : "#/components/schemas/3DSPaymentResponse",
-            "Redirect" : "#/components/schemas/RedirectPaymentResponse"
-          }
-        },
-        "properties" : {
-          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
-            "description" : "Payment Method",
-            "type" : "string"
-          },
-          "OrderId" : {
-            "$ref" : "#/components/schemas/OrderId"
-          }
-        }
-      },
       "NewPaymentResponse" : {
         "type" : "object",
+        "required" : [ "OrderId", "TransactionId", "Amount", "Currency" ],
         "properties" : {
           "OrderId" : {
             "$ref" : "#/components/schemas/OrderId"
-          },
-          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
-            "$ref" : "#/components/schemas/TODO_CHANGE_FIELD_SUCCESS_LOGIC"
           },
           "TransactionId" : {
             "$ref" : "#/components/schemas/TransactionId"
@@ -1082,346 +1054,434 @@
           },
           "Currency" : {
             "$ref" : "#/components/schemas/Currency"
-          },
-          "ProcessingAmount" : {
-            "$ref" : "#/components/schemas/ProcessingAmount"
-          },
-          "ProcessingCurrency" : {
-            "$ref" : "#/components/schemas/ProcessingCurrency"
-          },
-          "TransactionStatus" : {
-            "$ref" : "#/components/schemas/TransactionStatus_pay"
-          },
-          "RebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
           }
         }
       },
-      "3DSPaymentResponse" : {
+      "NewTokenResponse" : {
         "type" : "object",
+        "required" : [ "TransactionState" ],
+        "discriminator" : {
+          "propertyName" : "TransactionState",
+          "mapping" : {
+            "true" : "#/components/schemas/TokenResponse",
+            "false" : "#/components/schemas/FalseTokenResponse"
+          }
+        },
         "properties" : {
-          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
-            "$ref" : "#/components/schemas/TODO_CHANGE_FIELD_SUCCESS_LOGIC"
-          },
-          "OrderId" : {
-            "$ref" : "#/components/schemas/OrderId"
-          },
-          "RebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
-          },
-          "acsUrl" : {
-            "$ref" : "#/components/schemas/acsUrl"
-          },
-          "PaRes" : {
-            "$ref" : "#/components/schemas/PaRes"
-          },
-          "threeDSKey" : {
-            "$ref" : "#/components/schemas/threeDSKey"
-          },
-          "redirectUrl" : {
-            "$ref" : "#/components/schemas/redirectUrl"
-          },
-          "redirectParams" : {
-            "$ref" : "#/components/schemas/redirectParams"
-          },
-          "redirectMethod" : {
-            "$ref" : "#/components/schemas/redirectMethod"
+          "TransactionState" : {
+            "description" : "Состояние транзакции",
+            "type" : "string"
           }
         }
       },
-      "RedirectPaymentResponse" : {
-        "type" : "object",
-        "properties" : {
-          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
-            "$ref" : "#/components/schemas/TODO_CHANGE_FIELD_SUCCESS_LOGIC"
-          },
-          "OrderId" : {
-            "$ref" : "#/components/schemas/OrderId"
-          },
-          "RebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
-          },
-          "redirectUrl" : {
-            "$ref" : "#/components/schemas/redirectUrl"
-          },
-          "redirectParams" : {
-            "$ref" : "#/components/schemas/redirectParams"
-          },
-          "redirectTransId" : {
-            "$ref" : "#/components/schemas/redirectTransId"
-          },
-          "redirectMethod" : {
-            "$ref" : "#/components/schemas/redirectMethod"
+      "TokenResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewTokenResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "Token" ],
+          "properties" : {
+            "Token" : {
+              "$ref" : "#/components/schemas/Token"
+            }
           }
-        }
+        } ]
+      },
+      "FalseTokenResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewTokenResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "ErrorResponse" ],
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
       },
       "FalsePaymentResponse" : {
         "type" : "object",
+        "required" : [ "ErrorResponse" ],
         "properties" : {
-          "TODO_CHANGE_FIELD_SUCCESS_LOGIC" : {
-            "$ref" : "#/components/schemas/TODO_CHANGE_FIELD_SUCCESS_LOGIC"
-          },
-          "OrderId" : {
-            "$ref" : "#/components/schemas/OrderId"
-          },
           "ErrorResponse" : {
             "$ref" : "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "DoublePaymentResponse" : {
+        "type" : "object",
+        "required" : [ "ErrorResponse" ],
+        "properties" : {
+          "ErrorResponse" : {
+            "$ref" : "#/components/schemas/ErrorResponse"
+          },
+          "XXX" : {
+            "type" : "object",
+            "required" : [ "TransactionId", "OrderId" ],
+            "properties" : {
+              "OrderId" : {
+                "$ref" : "#/components/schemas/OrderId"
+              },
+              "TransactionId" : {
+                "$ref" : "#/components/schemas/TransactionId"
+              }
+            }
+          }
+        }
+      },
+      "NewRebillResponse" : {
+        "type" : "object",
+        "required" : [ "TransactionId", "TransactionState" ],
+        "discriminator" : {
+          "propertyName" : "TransactionState",
+          "mapping" : {
+            "success" : "#/components/schemas/RebillResponse",
+            "declined" : "#/components/schemas/FalseRebillResponse"
+          }
+        },
+        "properties" : {
+          "TransactionState" : {
+            "description" : "Состояние транзакции",
+            "type" : "string"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
           }
         }
       },
       "RebillResponse" : {
-        "type" : "object",
-        "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          },
-          "TransactionId" : {
-            "$ref" : "#/components/schemas/TransactionId"
-          },
-          "Amount" : {
-            "$ref" : "#/components/schemas/Amount"
-          },
-          "Currency" : {
-            "$ref" : "#/components/schemas/Currency"
-          },
-          "ProcessingAmount" : {
-            "$ref" : "#/components/schemas/ProcessingAmount"
-          },
-          "ProcessingCurrency" : {
-            "$ref" : "#/components/schemas/ProcessingCurrency"
-          },
-          "TransactionStatus" : {
-            "$ref" : "#/components/schemas/TransactionStatus_pay"
-          },
-          "newAmount" : {
-            "$ref" : "#/components/schemas/newAmount"
-          },
-          "RebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewRebillResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "Amount", "Currency", "ProcessingAmount", "ProcessingCurrency", "TransactionStatus" ],
+          "properties" : {
+            "Amount" : {
+              "$ref" : "#/components/schemas/Amount"
+            },
+            "Currency" : {
+              "$ref" : "#/components/schemas/Currency"
+            },
+            "ProcessingAmount" : {
+              "$ref" : "#/components/schemas/ProcessingAmount"
+            },
+            "ProcessingCurrency" : {
+              "$ref" : "#/components/schemas/ProcessingCurrency"
+            },
+            "TransactionStatus" : {
+              "$ref" : "#/components/schemas/TransactionStatus"
+            },
+            "RebillId" : {
+              "$ref" : "#/components/schemas/rebillId"
+            }
           }
-        }
+        } ]
       },
       "FalseRebillResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewRebillResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "ErrorResponse" ],
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
+      },
+      "NewRefundResponse" : {
         "type" : "object",
+        "required" : [ "TransactionId", "TransactionState" ],
+        "discriminator" : {
+          "propertyName" : "TransactionState",
+          "mapping" : {
+            "true" : "#/components/schemas/RefundResponse",
+            "false" : "#/components/schemas/FalseRefundResponse"
+          }
+        },
         "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
+          "TransactionState" : {
+            "description" : "Состояние транзакции",
+            "type" : "string"
           },
           "TransactionId" : {
             "$ref" : "#/components/schemas/TransactionId"
-          },
-          "ErrorResponse" : {
-            "$ref" : "#/components/schemas/ErrorResponse"
           }
         }
       },
       "RefundResponse" : {
-        "type" : "object",
-        "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          },
-          "TransactionId" : {
-            "$ref" : "#/components/schemas/TransactionId"
-          },
-          "Amount" : {
-            "$ref" : "#/components/schemas/Amount"
-          },
-          "Currency" : {
-            "$ref" : "#/components/schemas/Currency"
-          },
-          "ProcessingAmount" : {
-            "$ref" : "#/components/schemas/ProcessingAmount"
-          },
-          "ProcessingCurrency" : {
-            "$ref" : "#/components/schemas/ProcessingCurrency"
-          },
-          "TransactionStatus" : {
-            "$ref" : "#/components/schemas/TransactionStatus_pay"
-          },
-          "newAmount" : {
-            "$ref" : "#/components/schemas/newAmount"
-          },
-          "RebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
-          },
-          "OrderId" : {
-            "$ref" : "#/components/schemas/OrderId"
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewRefundResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "Amount", "Currency", "ProcessingAmount", "ProcessingCurrency", "TransactionStatus", "newAmount" ],
+          "properties" : {
+            "Amount" : {
+              "$ref" : "#/components/schemas/Amount"
+            },
+            "Currency" : {
+              "$ref" : "#/components/schemas/Currency"
+            },
+            "ProcessingAmount" : {
+              "$ref" : "#/components/schemas/ProcessingAmount"
+            },
+            "ProcessingCurrency" : {
+              "$ref" : "#/components/schemas/ProcessingCurrency"
+            },
+            "TransactionStatus" : {
+              "$ref" : "#/components/schemas/TransactionStatus"
+            },
+            "newAmount" : {
+              "$ref" : "#/components/schemas/newAmount"
+            }
           }
-        }
+        } ]
       },
       "FalseRefundResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewRefundResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "ErrorResponse" ],
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
+      },
+      "NewCancelResponse" : {
         "type" : "object",
+        "required" : [ "TransactionId", "TransactionState" ],
+        "discriminator" : {
+          "propertyName" : "TransactionState",
+          "mapping" : {
+            "true" : "#/components/schemas/CancelResponse",
+            "false" : "#/components/schemas/FalseCancelResponse"
+          }
+        },
         "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
+          "TransactionState" : {
+            "description" : "Состояние транзакции",
+            "type" : "string"
           },
           "TransactionId" : {
             "$ref" : "#/components/schemas/TransactionId"
-          },
-          "ErrorResponse" : {
-            "$ref" : "#/components/schemas/ErrorResponse"
           }
         }
       },
       "CancelResponse" : {
-        "type" : "object",
-        "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          },
-          "TransactionId" : {
-            "$ref" : "#/components/schemas/TransactionId"
-          },
-          "Amount" : {
-            "$ref" : "#/components/schemas/Amount"
-          },
-          "Currency" : {
-            "$ref" : "#/components/schemas/Currency"
-          },
-          "ProcessingAmount" : {
-            "$ref" : "#/components/schemas/ProcessingAmount"
-          },
-          "ProcessingCurrency" : {
-            "$ref" : "#/components/schemas/ProcessingCurrency"
-          },
-          "TransactionStatus" : {
-            "$ref" : "#/components/schemas/TransactionStatus_pay"
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewCancelResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "Amount", "Currency", "ProcessingAmount", "ProcessingCurrency", "TransactionStatus" ],
+          "properties" : {
+            "Amount" : {
+              "$ref" : "#/components/schemas/Amount"
+            },
+            "Currency" : {
+              "$ref" : "#/components/schemas/Currency"
+            },
+            "ProcessingAmount" : {
+              "$ref" : "#/components/schemas/ProcessingAmount"
+            },
+            "ProcessingCurrency" : {
+              "$ref" : "#/components/schemas/ProcessingCurrency"
+            },
+            "TransactionStatus" : {
+              "$ref" : "#/components/schemas/TransactionStatus"
+            }
           }
-        }
+        } ]
       },
       "FalseCancelResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewCancelResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "ErrorResponse" ],
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
+      },
+      "NewChargeResponse" : {
         "type" : "object",
+        "required" : [ "TransactionId", "TransactionState" ],
+        "discriminator" : {
+          "propertyName" : "TransactionState",
+          "mapping" : {
+            "true" : "#/components/schemas/ChargeResponse",
+            "false" : "#/components/schemas/FalseChargeResponse"
+          }
+        },
         "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
+          "TransactionState" : {
+            "description" : "TransactionState",
+            "type" : "string"
           },
           "TransactionId" : {
             "$ref" : "#/components/schemas/TransactionId"
-          },
-          "ErrorResponse" : {
-            "$ref" : "#/components/schemas/ErrorResponse"
           }
         }
       },
       "ChargeResponse" : {
-        "type" : "object",
-        "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          },
-          "TransactionId" : {
-            "$ref" : "#/components/schemas/TransactionId"
-          },
-          "Amount" : {
-            "$ref" : "#/components/schemas/Amount"
-          },
-          "Currency" : {
-            "$ref" : "#/components/schemas/Currency"
-          },
-          "ProcessingAmount" : {
-            "$ref" : "#/components/schemas/ProcessingAmount"
-          },
-          "ProcessingCurrency" : {
-            "$ref" : "#/components/schemas/ProcessingCurrency"
-          },
-          "TransactionStatus" : {
-            "$ref" : "#/components/schemas/TransactionStatus_pay"
-          },
-          "newAmount" : {
-            "$ref" : "#/components/schemas/newAmount"
-          },
-          "RebillId" : {
-            "$ref" : "#/components/schemas/rebillId"
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewChargeResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "Amount", "Currency", "ProcessingAmount", "ProcessingCurrency", "TransactionStatus", "newAmount" ],
+          "properties" : {
+            "Amount" : {
+              "$ref" : "#/components/schemas/Amount"
+            },
+            "Currency" : {
+              "$ref" : "#/components/schemas/Currency"
+            },
+            "ProcessingAmount" : {
+              "$ref" : "#/components/schemas/ProcessingAmount"
+            },
+            "ProcessingCurrency" : {
+              "$ref" : "#/components/schemas/ProcessingCurrency"
+            },
+            "TransactionStatus" : {
+              "$ref" : "#/components/schemas/TransactionStatus"
+            },
+            "newAmount" : {
+              "$ref" : "#/components/schemas/newAmount"
+            },
+            "RebillId" : {
+              "$ref" : "#/components/schemas/rebillId"
+            }
           }
-        }
+        } ]
       },
       "FalseChargeResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewChargeResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "ErrorResponse" ],
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
+      },
+      "NewUnsubscribeResponse" : {
         "type" : "object",
+        "required" : [ "TransactionState" ],
+        "discriminator" : {
+          "propertyName" : "TransactionState",
+          "mapping" : {
+            "true" : "#/components/schemas/UnsubscribeResponse",
+            "false" : "#/components/schemas/FalseUnsubscribeResponse"
+          }
+        },
         "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          },
-          "TransactionId" : {
-            "$ref" : "#/components/schemas/TransactionId"
-          },
-          "ErrorResponse" : {
-            "$ref" : "#/components/schemas/ErrorResponse"
+          "TransactionState" : {
+            "description" : "TransactionState",
+            "type" : "string"
           }
         }
       },
       "UnsubscribeResponse" : {
-        "type" : "object",
-        "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          }
-        }
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewUnsubscribeResponse"
+        } ]
       },
       "FalseUnsubscribeResponse" : {
-        "type" : "object",
-        "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          },
-          "ErrorResponse" : {
-            "$ref" : "#/components/schemas/ErrorResponse"
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewUnsubscribeResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "ErrorResponse" ],
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
           }
-        }
+        } ]
       },
       "NewPayoutResponse" : {
         "type" : "object",
-        "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          },
-          "OrderId" : {
-            "$ref" : "#/components/schemas/OrderId"
-          },
-          "TransactionId" : {
-            "$ref" : "#/components/schemas/TransactionId"
-          },
-          "Amount" : {
-            "$ref" : "#/components/schemas/Amount"
-          },
-          "Currency" : {
-            "$ref" : "#/components/schemas/Currency"
-          },
-          "TransactionStatus" : {
-            "$ref" : "#/components/schemas/TransactionStatus_payout"
-          }
-        }
-      },
-      "FalsePayoutResponse" : {
-        "type" : "object",
-        "properties" : {
-          "success" : {
-            "$ref" : "#/components/schemas/success"
-          },
-          "OrderId" : {
-            "$ref" : "#/components/schemas/OrderId"
-          },
-          "ErrorResponse" : {
-            "$ref" : "#/components/schemas/ErrorResponse"
-          }
-        }
-      },
-      "BalanceResponse" : {
-        "type" : "object",
+        "required" : [ "TransactionState", "OrderId" ],
         "discriminator" : {
-          "propertyName" : "Success",
+          "propertyName" : "TransactionState",
           "mapping" : {
-            "true" : "#/components/schemas/NewBalanceResponse",
-            "false" : "#/components/schemas/ErrorBalanceResponse"
+            "success" : "#/components/schemas/PayoutResponse",
+            "declined" : "#/components/schemas/FalsePayoutResponse",
+            "pending" : "#/components/schemas/FalsePayoutResponse"
           }
         },
         "properties" : {
-          "Success" : {
-            "description" : "Success",
+          "TransactionState" : {
+            "description" : "success",
             "type" : "string"
           },
-          "description" : {
-            "$ref" : "#/components/schemas/description"
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
+          }
+        }
+      },
+      "PayoutResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewPayoutResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "TransactionId", "Amount", "Currency", "TransactionStatus" ],
+          "properties" : {
+            "TransactionId" : {
+              "$ref" : "#/components/schemas/TransactionId"
+            },
+            "Amount" : {
+              "$ref" : "#/components/schemas/Amount"
+            },
+            "Currency" : {
+              "$ref" : "#/components/schemas/Currency"
+            },
+            "TransactionStatus" : {
+              "$ref" : "#/components/schemas/TransactionStatus"
+            }
+          }
+        } ]
+      },
+      "FalsePayoutResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/NewPayoutResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "ErrorResponse" ],
+          "properties" : {
+            "ErrorResponse" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
+      },
+      "BalanceResponse" : {
+        "type" : "object",
+        "required" : [ "TransactionState" ],
+        "discriminator" : {
+          "propertyName" : "TransactionState",
+          "mapping" : {
+            "success" : "#/components/schemas/NewBalanceResponse",
+            "declined" : "#/components/schemas/ErrorBalanceResponse"
+          }
+        },
+        "properties" : {
+          "TransactionState" : {
+            "description" : "TransactionState",
+            "type" : "string"
+          },
+          "Description" : {
+            "$ref" : "#/components/schemas/Description"
           }
         }
       },
@@ -1432,6 +1492,7 @@
         "type" : "object"
       },
       "CardDetails" : {
+        "required" : [ "CardNumber", "ExpMonth", "ExpYear", "CVC", "CardholderName" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/NewPaymentRequest"
         }, {
@@ -1492,6 +1553,7 @@
       },
       "ErrorResponse" : {
         "type" : "object",
+        "required" : [ "ErrorCode", "ErrorDescription" ],
         "properties" : {
           "ErrorCode" : {
             "$ref" : "#/components/schemas/ErrorCode"
@@ -1532,6 +1594,7 @@
       },
       "Webhook" : {
         "type" : "object",
+        "required" : [ "Event", "TransactionId", "OrderId", "Amount", "Currency", "DateTime", "IsTest" ],
         "discriminator" : {
           "propertyName" : "Event",
           "mapping" : {
@@ -1554,9 +1617,6 @@
           "OrderId" : {
             "$ref" : "#/components/schemas/OrderId"
           },
-          "SiteId" : {
-            "$ref" : "#/components/schemas/SiteId"
-          },
           "Amount" : {
             "$ref" : "#/components/schemas/Amount"
           },
@@ -1575,15 +1635,16 @@
           "Phone" : {
             "$ref" : "#/components/schemas/Phone"
           },
-          "description" : {
-            "$ref" : "#/components/schemas/description"
+          "Description" : {
+            "$ref" : "#/components/schemas/Description"
           },
-          "CustomFields" : {
-            "$ref" : "#/components/schemas/CustomFields"
+          "ExtraData" : {
+            "$ref" : "#/components/schemas/ExtraData"
           }
         }
       },
       "PaymentsWebhook" : {
+        "required" : [ "CardMasked", "Status" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/Webhook"
         }, {
@@ -1601,9 +1662,6 @@
             "rebillId" : {
               "$ref" : "#/components/schemas/rebillId"
             },
-            "description" : {
-              "$ref" : "#/components/schemas/description"
-            },
             "Token" : {
               "$ref" : "#/components/schemas/Token"
             },
@@ -1617,6 +1675,7 @@
         } ]
       },
       "FailWebhook" : {
+        "required" : [ "CardMasked", "Status", "ErrorMessage" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/Webhook"
         }, {
@@ -1625,14 +1684,14 @@
             "CardMasked" : {
               "$ref" : "#/components/schemas/CardMasked"
             },
+            "ErrorMessage" : {
+              "$ref" : "#/components/schemas/ErrorMessage"
+            },
             "CardHolder" : {
               "$ref" : "#/components/schemas/CardHolder"
             },
             "Status" : {
               "$ref" : "#/components/schemas/Status"
-            },
-            "description" : {
-              "$ref" : "#/components/schemas/description"
             },
             "ExpirationDate" : {
               "$ref" : "#/components/schemas/ExpirationDate"
@@ -1644,6 +1703,7 @@
         } ]
       },
       "RefundWebhook" : {
+        "required" : [ "CardMasked", "newAmount" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/Webhook"
         }, {
@@ -1668,6 +1728,7 @@
         } ]
       },
       "VoidWebhook" : {
+        "required" : [ "CardMasked" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/Webhook"
         }, {
@@ -1689,6 +1750,7 @@
         } ]
       },
       "ReceiptWebhook" : {
+        "required" : [ "newAmount", "Status", "Email", "Phone" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/Webhook"
         }, {
@@ -1699,14 +1761,12 @@
             },
             "Status" : {
               "$ref" : "#/components/schemas/Status"
-            },
-            "description" : {
-              "$ref" : "#/components/schemas/description"
             }
           }
         } ]
       },
       "3DSWebhook" : {
+        "required" : [ "PaRes", "PaReq", "MD" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/Webhook"
         }, {
@@ -1725,6 +1785,7 @@
         } ]
       },
       "NewBalanceResponse" : {
+        "required" : [ "Balance", "Currency" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/BalanceResponse"
         }, {
@@ -1740,6 +1801,7 @@
         } ]
       },
       "ErrorBalanceResponse" : {
+        "required" : [ "ErrorResponse" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/BalanceResponse"
         }, {
@@ -1753,60 +1815,78 @@
       },
       "TransactionIdResponse" : {
         "type" : "object",
+        "required" : [ "TransactionState", "TransactionStatus", "TransactionId", "OrderId" ],
         "discriminator" : {
-          "propertyName" : "Success",
+          "propertyName" : "TransactionState",
           "mapping" : {
-            "true" : "#/components/schemas/NewTransactionIdResponse",
-            "false" : "#/components/schemas/ErrorTransactionIdResponse"
+            "success" : "#/components/schemas/SuccessTransactionIdResponse",
+            "preauthorized" : "#/components/schemas/PreauthorizedTransactionIdResponse",
+            "pending" : "#/components/schemas/PendingTransactionIdResponse",
+            "declined" : "#/components/schemas/ErrorTransactionIdResponse",
+            "wait_for_3ds" : "#/components/schemas/3DSTransactionIdResponse",
+            "redirect" : "#/components/schemas/RedirectTransactionIdResponse"
           }
         },
         "properties" : {
-          "Success" : {
-            "description" : "Success",
+          "TransactionState" : {
+            "description" : "Состоянии транзакции",
             "type" : "string"
+          },
+          "TransactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus"
+          },
+          "TransactionId" : {
+            "$ref" : "#/components/schemas/TransactionId"
+          },
+          "OrderId" : {
+            "$ref" : "#/components/schemas/OrderId"
           }
         }
       },
       "NewTransactionIdResponse" : {
+        "type" : "object",
+        "required" : [ "Amount", "Currency", "ProcessingAmount", "ProcessingCurrency" ],
+        "properties" : {
+          "Amount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "Currency" : {
+            "$ref" : "#/components/schemas/Currency"
+          },
+          "ProcessingAmount" : {
+            "$ref" : "#/components/schemas/ProcessingAmount"
+          },
+          "ProcessingCurrency" : {
+            "$ref" : "#/components/schemas/ProcessingCurrency"
+          }
+        }
+      },
+      "SuccessTransactionIdResponse" : {
+        "type" : "object",
         "allOf" : [ {
           "$ref" : "#/components/schemas/TransactionIdResponse"
         }, {
-          "type" : "object",
-          "properties" : {
-            "TransactionId" : {
-              "$ref" : "#/components/schemas/TransactionId"
-            },
-            "OrderId" : {
-              "$ref" : "#/components/schemas/OrderId"
-            },
-            "Amount" : {
-              "$ref" : "#/components/schemas/Amount"
-            },
-            "Currency" : {
-              "$ref" : "#/components/schemas/Currency"
-            },
-            "ProcessingAmount" : {
-              "$ref" : "#/components/schemas/ProcessingAmount"
-            },
-            "ProcessingCurrency" : {
-              "$ref" : "#/components/schemas/ProcessingCurrency"
-            },
-            "TransactionStatus_pay" : {
-              "$ref" : "#/components/schemas/TransactionStatus_pay"
-            },
-            "redirectMethod" : {
-              "$ref" : "#/components/schemas/redirectMethod"
-            },
-            "redirectUrl" : {
-              "$ref" : "#/components/schemas/redirectUrl"
-            },
-            "redirectParams" : {
-              "$ref" : "#/components/schemas/redirectParams"
-            }
-          }
+          "$ref" : "#/components/schemas/NewTransactionIdResponse"
+        } ]
+      },
+      "PreauthorizedTransactionIdResponse" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/TransactionIdResponse"
+        }, {
+          "$ref" : "#/components/schemas/NewTransactionIdResponse"
+        } ]
+      },
+      "PendingTransactionIdResponse" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/TransactionIdResponse"
+        }, {
+          "$ref" : "#/components/schemas/NewTransactionIdResponse"
         } ]
       },
       "ErrorTransactionIdResponse" : {
+        "required" : [ "ErrorResponse" ],
         "allOf" : [ {
           "$ref" : "#/components/schemas/TransactionIdResponse"
         }, {
@@ -1814,6 +1894,38 @@
           "properties" : {
             "ErrorResponse" : {
               "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        } ]
+      },
+      "3DSTransactionIdResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/TransactionIdResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "acsUrl", "PaRes", "MD" ],
+          "properties" : {
+            "acsUrl" : {
+              "$ref" : "#/components/schemas/acsUrl"
+            },
+            "PaRes" : {
+              "$ref" : "#/components/schemas/PaRes"
+            },
+            "MD" : {
+              "$ref" : "#/components/schemas/MD"
+            }
+          }
+        } ]
+      },
+      "RedirectTransactionIdResponse" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/TransactionIdResponse"
+        }, {
+          "type" : "object",
+          "required" : [ "TransactionId" ],
+          "properties" : {
+            "TransactionId" : {
+              "$ref" : "#/components/schemas/TransactionId"
             }
           }
         } ]
@@ -1829,5 +1941,8 @@
   "servers" : [ {
     "description" : "SwaggerHub API Auto Mocking",
     "url" : "https://virtserver.swaggerhub.com/Jackburger/payment-center/v3-oas3"
+  }, {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/solbeg-rpc/payment-center/v3"
   } ]
 }
