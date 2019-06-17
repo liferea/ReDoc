@@ -1551,6 +1551,26 @@
       "PaymentMethod" : {
         "type" : "object"
       },
+      "Details" : {
+        "type" : "object",
+        "properties" : {
+          "CardNumber" : {
+            "$ref" : "#/components/schemas/CardNumber"
+          },
+          "ExpMonth" : {
+            "$ref" : "#/components/schemas/ExpMonth"
+          },
+          "ExpYear" : {
+            "$ref" : "#/components/schemas/ExpYear"
+          },
+          "CardholderName" : {
+            "$ref" : "#/components/schemas/CardHolder"
+          },
+          "CVC" : {
+            "$ref" : "#/components/schemas/CVC"
+          }
+        }
+      },
       "CardDetails" : {
         "required" : [ "CardNumber", "ExpMonth", "ExpYear", "CVC", "CardholderName" ],
         "allOf" : [ {
@@ -1558,20 +1578,8 @@
         }, {
           "type" : "object",
           "properties" : {
-            "CardNumber" : {
-              "$ref" : "#/components/schemas/CardNumber"
-            },
-            "ExpMonth" : {
-              "$ref" : "#/components/schemas/ExpMonth"
-            },
-            "ExpYear" : {
-              "$ref" : "#/components/schemas/ExpYear"
-            },
-            "CardholderName" : {
-              "$ref" : "#/components/schemas/CardHolder"
-            },
-            "CVC" : {
-              "$ref" : "#/components/schemas/CVC"
+            "Details" : {
+              "$ref" : "#/components/schemas/Details"
             }
           }
         } ]
