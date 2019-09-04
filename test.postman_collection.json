@@ -1,0 +1,406 @@
+{
+	"info": {
+		"_postman_id": "082ac879-b995-40c1-adca-3f15035e9605",
+		"name": "test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://172.31.40.80:8081/v2/status",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "serviceId=18&tranId=223313"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/status",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.35.91:8087/utils/v2healthcheck Copy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "TCB-Header-Sign",
+						"value": "UXQzyN9ciyv0VdyTpidJzvcKGso=",
+						"type": "text"
+					},
+					{
+						"key": "TCB-Header-Login",
+						"value": "A010001185ID",
+						"type": "text"
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": "*",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"Orderid\": \"374108\", \"CardInfo\": {\"ExpirationMonth\": \"12\", \"CVV\": \"123\", \"ExpirationYear\": \"2020\", \"CardNumber\": \"4111111111111111\", \"CardHolder\": \"test card\"}, \"ClientInfo\": {\"PhoneNumber\": \"\", \"FIO\": \"test card\", \"Email\": \"n@mail.ru\"}, \"ReturnUrl\": \"\", \"Description\": \"TestTran123!\", \"Amount\": \"2000\"}"
+				},
+				"url": {
+					"raw": "https://paytest.online.tkbbank.ru/api/tcbpay/gate/registerorderfromunregisteredcardwof",
+					"protocol": "https",
+					"host": [
+						"paytest",
+						"online",
+						"tkbbank",
+						"ru"
+					],
+					"path": [
+						"api",
+						"tcbpay",
+						"gate",
+						"registerorderfromunregisteredcardwof"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://test.payment.center/v2/pay",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "orderId=TestTran123!&description=TestTran123!&currency=RUB&email=n%40mail.ru&expMonth=12&amount=20&serviceId=49&cardHolder=test card&expYear=20&customFields=IP%3D37.110.108.239%3BAddress%3DMoscow%2520Central%2520str.%2520flat%25201&cardNumber=4916798373459761&cvc=123&rebillFlag=0"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/pay",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"pay"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/block",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "orderId=12355554567&description=test+monitor&currency=RUB&email=n%40pay.center&expMonth=09&amount=10&serviceId=78&cardHolder=mik+mik&expYear=25&cardNumber=4111111111111111&cvc=323&customFields=IP%3D10.10.0.121,%2010.10.0.122&rebillFlag=1"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/block",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"block"
+					]
+				},
+				"description": "full"
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/block",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "orderId=123455512&description=test+monitor&currency=RUB&email=n%40pay.center&expMonth=11&amount=20&serviceId=49&cardHolder=bob+bob&expYear=22&customFields=IP%3D37.110.108.239%3BAddress%3DMoscow%2520Central%2520str.%2520flat%25201&cardNumber=4242424242424242&cvc=123&rebillFlag=1"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/block",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"block"
+					]
+				},
+				"description": "fg"
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/rebill",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "orderId=1234555565612&description=test+monitor&currency=RUB&amount=10&serviceId=49&rebillId=219478"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/rebill",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"rebill"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/payout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "orderId=12344111&description=test+monitor&&currency=RUB&email=n%40pay.center&expMonth=12&amount=500&serviceId=130&cardHolder=mik+mik&expYear=19&customFields=IP%3D37.110.108.239%3BAddress%3DMoscow%2520Central%2520str.%2520flat%25201&cardNumber=4242424242424242&cvc=123&bankAdvParams ={\"phoneNumber\":\"799123456\"}"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/payout",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"payout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/refund",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "currency=RUB&amount=1&serviceId=43&tranID=223304"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/refund",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"refund"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/charge",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "currency=RUB&amount=10&serviceId=49&tranID=201134"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/charge",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"charge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/cancel",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "currency=RUB&amount=14&serviceId=49&tranID=203204"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/charge",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"charge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/manualacceptcharge",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "serviceId=49&gate=hc&tranId=252266"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/manualacceptcharge",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"manualacceptcharge"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.40.80:8081/v2/manualreject",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "serviceId=2&gate=tcs&tranId=252266"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8081/v2/manualreject",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8081",
+					"path": [
+						"v2",
+						"manualreject"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://test.payment.center/cb/hc",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"OrderInfo\":{\"OrderId\":\"229728\",\"OrderNumber\":374086,\"Amount\":150000,\"Fee\":null,\"Type\":\"REFUND\",\"State\":0,\"StateDescription\":\"Успешно\",\"MaskedPan\":\"4000 79** **** 4248\",\"ExecDate\":\"22.08.2019\",\"ExecDateTime\":\"2019-08-22T18:24:16.0000000+03:00\",\"ExecTime\":\"18:24:16\",\"Rrn\":\"923415480702\",\"AdditionalInfo\":{\"CardRefID\":null,\"CardExpYear\":2020,\"CardExpMonth\":11,\"CardIssuingBank\":\"AK BARS BANK\",\"CardBrand\":\"VISA\",\"CardType\":\"CREDIT\",\"CardLevel\":\"PLATINUM\",\"CardNumberHash\":\"c86244d10d59f97f91140e5d35c83cdffba99bcd1d5c04291d9becb00da85228\"}}}"
+				},
+				"url": {
+					"raw": "http://172.31.40.80:8089/cb/tkb",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"40",
+						"80"
+					],
+					"port": "8089",
+					"path": [
+						"cb",
+						"tkb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://172.31.35.91:8087/utils/v2healthcheck",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "serviceId=43&tranId=373741"
+				},
+				"url": {
+					"raw": "http://172.31.35.91:8087/utils/v2healthcheck",
+					"protocol": "http",
+					"host": [
+						"172",
+						"31",
+						"35",
+						"91"
+					],
+					"port": "8087",
+					"path": [
+						"utils",
+						"v2healthcheck"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
